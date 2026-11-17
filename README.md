@@ -10,8 +10,9 @@ A small, local toolkit for planning realistic **virtual-influencer video ads**:
 
 No API keys, servers, databases or paid add-ons. Everything runs on your Mac.
 
-> **Phase 1 status:** tooling, prompts, schemas and docs are ready. The two characters are
-> **placeholders**: no reference images have been added yet, and nothing has been rendered.
+> **Status (Phase 2):** all prompt roles, the render-sheet generator and the attempt logger are
+> ready. The two characters are still **placeholders**: no reference images have been added yet,
+> and nothing has been rendered.
 
 ---
 
@@ -150,9 +151,42 @@ python3 tools/validate.py flow-config
    Fix anything listed under `ERROR`. Common ones are a clip longer than the model allows, an
    unverified claim, a missing image, or an image from the wrong character.
 
-4. Render in Flow by hand. See [docs/google-flow-production-guide.md](docs/google-flow-production-guide.md).
+4. Make the copy/paste render sheet:
+
+   ```bash
+   python3 tools/render_sheet.py outputs/my-job/production.json
+   ```
+
+   This writes `outputs/my-job/render-sheet.md`, with each clip's upload order, prompt, the QC
+   checks to watch and where to save the file. It refuses until the plan is ready. Add
+   `--allow-not-ready` for a preview that lists the blockers.
+
+5. Render in Flow by hand. See [docs/google-flow-production-guide.md](docs/google-flow-production-guide.md).
 
 `briefs/demo-001/expected-production.json` shows what a finished plan looks like.
+
+### Step-by-step variant (more control)
+
+`original-creation.md` plans everything in one pass. To review and refine each stage
+separately, start from an empty DRAFT:
+
+```bash
+python3 tools/new_production.py --job my-job --brief briefs/my-job/brief.json --character female_02
+```
+
+Then ask Claude Code to run each prompt in turn on `outputs/my-job/production.json`. Check the
+result after each stage before moving on:
+
+| Stage | Prompt | Fills in |
+|---|---|---|
+| 1 | `prompts/creative-director.md` | `outputs/my-job/concepts.json` (3–5 options). You pick one, which goes into `concept`. |
+| 2 | `prompts/scriptwriter.md` | `script`, `claims_used`, plus `script-notes.md` (line timing) |
+| 3 | `prompts/storyboard.md` | `storyboard` (shots grouped into Flow clips) |
+| 4 | `prompts/character-consistency.md` | `character_consistency`, character `reference_assets` |
+| 5 | `prompts/google-flow.md` | `flow_prompts`, then run `tools/render_sheet.py` |
+
+After a bad render, use Part B of `character-consistency.md` ("drift diagnosis") to decide what
+to change.
 
 ## 7. Mode B — adapt an authorized reference video
 
@@ -204,13 +238,18 @@ make something **original**, never a copy.
 ## 8. After rendering
 
 - Score each clip with [docs/quality-control-checklist.md](docs/quality-control-checklist.md).
-- Log every attempt in the experiment log:
+- Log **every** attempt, including failed ones. The log file is created on first use:
 
   ```bash
-  cp experiments/experiment-log-template.csv experiments/experiment-log.csv
+  python3 tools/log_attempt.py outputs/my-job/production.json --clip C01 --credits 20 --scores QC01=4,QC02=4,QC03=3,QC04=2,QC05=5,QC06=4,QC07=3,QC08=3,QC09=4,QC10=1 --problems "6 fingers at 2.4 s" --decision RETRY --output-file outputs/my-job/renders/C01_a01.mp4
   ```
 
-- A human reviewer must approve before anything is delivered commercially.
+  For the take you keep, use `--decision SELECTED --update-production`. That copies the scores
+  into `production.json` and sets the status to `RENDERED_PENDING_QC`. The tool numbers
+  experiments and attempts for you and prints which checks failed.
+
+- A human reviewer must approve before anything is delivered commercially. Set `status:
+  "APPROVED"` with your name and date in `human_review` by hand. No tool does that for you.
 
 ## 9. Safety and rights rules
 
@@ -228,9 +267,25 @@ Each prompt has a `version` in its front matter. When you change how a prompt be
 version. Productions record the versions they used (`prompt_versions`), and the experiment log
 has a column for them, so you can tell which prompt changes improved results.
 
-| Prompt | Status |
+| Prompt | Version | Role |
+|---|---|---|
+| `original-creation.md` | 0.1.1 | Whole plan in one pass |
+| `reference-analysis.md` | 0.1.0 | Mode B frame analysis |
+| `creative-director.md` | 0.1.0 | Concept options |
+| `scriptwriter.md` | 0.1.0 | Script within time and claim limits |
+| `storyboard.md` | 0.1.0 | Timestamped shots and clips |
+| `character-consistency.md` | 0.1.0 | Identity plan and drift diagnosis |
+| `google-flow.md` | 0.2.0 | Flow prompts per clip |
+
+## 11. Tools
+
+| Command | What it does |
 |---|---|
-| `original-creation.md` | 0.1.0 (active) |
-| `reference-analysis.md` | 0.1.0 (active) |
-| `google-flow.md` | 0.1.0 (active) |
-| `creative-director.md`, `storyboard.md`, `character-consistency.md` | planned (Phase 2); currently part of original-creation |
+| `tools/extract_frames.py` | Timestamped frames + manifest from an authorized MP4/MOV |
+| `tools/generate_manifest.py` | Rebuild a manifest for frames that already exist |
+| `tools/validate.py` | Validate characters, briefs, productions, manifests and analyses (`--check-ready` for render readiness) |
+| `tools/new_production.py` | Create an empty DRAFT production for a job |
+| `tools/render_sheet.py` | Production → copy/paste render sheet for Flow |
+| `tools/log_attempt.py` | Log a render attempt and its QC scores to the experiment CSV |
+
+Every tool has `--help`.

@@ -1,6 +1,6 @@
 ---
 id: original-creation
-version: 0.1.0
+version: 0.1.1
 status: active
 used_for: Mode A (original creation). Also Mode B, step 2, with a reference analysis attached.
 inputs:
@@ -25,6 +25,15 @@ output: outputs/<JOB_ID>/production.json  (schemas/production.schema.json)
 `config/google-flow.json` where the `{{…}}` placeholders are. Save the JSON reply as
 `outputs/<job>/production.json`, then run
 `python3 tools/validate.py production outputs/<job>/production.json`.
+
+When the plan validates, make the copy/paste sheet with
+`python3 tools/render_sheet.py outputs/<job>/production.json`.
+
+**One go or step by step?** This prompt does every stage in one pass, which is good for quick
+drafts. To refine each stage separately (pick a concept, then script, storyboard, character
+plan, Flow prompts), start with `python3 tools/new_production.py` and use
+`creative-director.md` → `scriptwriter.md` → `storyboard.md` → `character-consistency.md` →
+`google-flow.md`.
 
 ---
 
@@ -112,7 +121,7 @@ images to attach for each clip. Start from the profile's `identity_consistency_i
 
 ### Step 5 — Google Flow prompts
 
-Follow the rules in `prompts/google-flow.md` (version 0.1.x) to write one prompt per clip.
+Follow the rules in `prompts/google-flow.md` to write one prompt per clip.
 Use only models with `enabled: true` and only modes they list. Every image you put in
 `ingredients`, `start_frame` or `end_frame` must also appear in `reference_assets`:
 
@@ -161,7 +170,7 @@ Return one JSON object that validates against `schemas/production.schema.json`:
   "duration_seconds": 8,
   "aspect_ratio": "9:16",
   "visual_style": "…",
-  "prompt_versions": { "original-creation": "0.1.0", "google-flow": "0.1.0" },
+  "prompt_versions": { "original-creation": "0.1.1", "google-flow": "0.2.0" },
   "concept": { "title": "", "angle": "", "hook": "", "key_message": "", "target_audience": "", "alternatives_considered": [] },
   "script": "",
   "claims_used": [],

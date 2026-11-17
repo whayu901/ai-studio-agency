@@ -1,14 +1,16 @@
 # Experiment log
 
-Make your own working log from the template. Real logs are gitignored, because they may hold
-client names and spend:
+Log **one row per Flow generation attempt** (not per finished video), so retries and credit
+spend are visible. The easiest way is the logger, which creates `experiments/experiment-log.csv`
+on first use and fills in ids, attempt numbers, mode, model and prompt versions for you:
 
 ```bash
-cp experiments/experiment-log-template.csv experiments/experiment-log.csv
+python3 tools/log_attempt.py outputs/<job>/production.json --clip C01 --credits 20 --scores QC01=4,QC02=5 --decision RETRY
 ```
 
-Add **one row per Flow generation attempt** (not per finished video), so retries and credit
-spend are visible. Open it in Numbers, Excel or Google Sheets.
+Real logs are gitignored, because they may hold client names and spend. You can also copy the
+template and fill it in by hand in Numbers, Excel or Google Sheets. Keep the header unchanged
+so the logger can keep appending.
 
 | Column | Meaning |
 |---|---|

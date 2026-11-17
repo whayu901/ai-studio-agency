@@ -23,6 +23,13 @@ REQUIRED = [
     "tools/extract_frames.py",
     "tools/generate_manifest.py",
     "tools/validate.py",
+    "tools/new_production.py",
+    "tools/render_sheet.py",
+    "tools/log_attempt.py",
+    "prompts/creative-director.md",
+    "prompts/scriptwriter.md",
+    "prompts/storyboard.md",
+    "prompts/character-consistency.md",
     "briefs/demo-001/brief.json",
     "briefs/demo-001/expected-production.json",
     "config/google-flow.json",
@@ -30,7 +37,7 @@ REQUIRED = [
     "docs/quality-control-checklist.md",
     "experiments/experiment-log-template.csv",
 ]
-ACTIVE_PROMPTS = ["original-creation", "reference-analysis", "google-flow"]
+ACTIVE_PROMPTS = ["original-creation", "reference-analysis", "google-flow", "creative-director", "scriptwriter", "storyboard", "character-consistency"]
 
 
 class StructureTest(unittest.TestCase):

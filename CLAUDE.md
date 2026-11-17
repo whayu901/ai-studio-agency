@@ -47,7 +47,15 @@ calls a paid API.
   `python3 tools/validate.py production outputs/<job_id>/production.json --check-ready`
 - Analyze a reference (Mode B): `python3 tools/extract_frames.py <video> --rights <basis>`. Then
   follow `prompts/reference-analysis.md`, reading the frames listed in `manifest.json` in order.
-- Compile Flow prompts: `prompts/google-flow.md` + `config/google-flow.json`.
+- Step by step instead: `python3 tools/new_production.py --job <job> --brief <brief> --character <id>`,
+  then creative-director → scriptwriter → storyboard → character-consistency → google-flow.
+  Each stage edits only its own fields in `production.json`. Validate after each one. Wait for
+  the user to pick a concept before stage 2.
+- Compile Flow prompts: `prompts/google-flow.md` + `config/google-flow.json`, then
+  `python3 tools/render_sheet.py outputs/<job>/production.json`. Never hand-write the render
+  sheet.
+- Log a render the user did: `python3 tools/log_attempt.py outputs/<job>/production.json --clip C01 ...`
+  Use the scores and credits the **user** reports. Never invent them. Never set `APPROVED` yourself.
 - Tests: `python3 -m unittest discover -s tests -v`
 
 ## Conventions

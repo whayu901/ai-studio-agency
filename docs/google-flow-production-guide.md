@@ -11,8 +11,15 @@ what you see, go by your screen and update `config/google-flow.json`.
 python3 tools/validate.py production outputs/<job>/production.json --check-ready
 ```
 
-Continue only when it prints `[OK]`. Keep `outputs/<job>/render-sheet.md` (or the
-`flow_prompts` section of `production.json`) open next to the browser.
+Continue only when it prints `[OK]`. Then make the render sheet and keep it open next to the
+browser:
+
+```bash
+python3 tools/render_sheet.py outputs/<job>/production.json
+```
+
+It writes `outputs/<job>/render-sheet.md`, with the upload order, prompt and checks for every
+clip.
 
 ## 1. Open Google Flow
 
@@ -76,9 +83,15 @@ normal speed and at 0.25×, and compare the face side by side with the close-up 
 
 1. Download the clip into `outputs/<job>/renders/` named `<clip_id>_a<attempt>.mp4`
    (e.g. `C01_a01.mp4`). This folder is gitignored.
-2. Add one row to `experiments/experiment-log.csv` for **every** attempt, including failed ones,
-   with credits used and QC scores.
-3. When you pick a final take, put its scores into `quality_checks` and set `status` to
-   `RENDERED_PENDING_QC`. Set it to `APPROVED` only after a named reviewer signs off.
+2. Log **every** attempt, including failed ones, with the credits Flow shows and your QC
+   scores:
+
+   ```bash
+   python3 tools/log_attempt.py outputs/<job>/production.json --clip C01 --credits 20 --scores QC01=4,QC02=4,QC03=3,QC04=2,QC05=5,QC06=4,QC07=3,QC08=3,QC09=4,QC10=1 --problems "extra finger at 2.4 s" --decision RETRY --output-file outputs/<job>/renders/C01_a01.mp4
+   ```
+
+3. For the take you keep, log it with `--decision SELECTED --update-production`. That copies its
+   scores into `quality_checks` and sets `status` to `RENDERED_PENDING_QC`. Set `APPROVED` (with
+   reviewer and date in `human_review`) by hand, only after a named reviewer signs off.
 4. Edit, add text, and add voice-over or captions in your editor. **Never publish automatically.**
    Apply the platform's AI-content disclosure where it's required.

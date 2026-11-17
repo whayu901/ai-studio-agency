@@ -8,7 +8,7 @@
   "duration_seconds": 8,
   "aspect_ratio": "9:16",
   "visual_style": "Natural smartphone selfie video, daylight, realistic, lightly handheld",
-  "prompt_versions": { "original-creation": "0.1.0", "google-flow": "0.1.0" },
+  "prompt_versions": { "original-creation": "0.1.1", "google-flow": "0.2.0" },
   "concept": {
     "title": "Still ice at 5 PM",
     "angle": "Honest end-of-day proof moment: she shakes the tumbler and the ice from the morning still rattles.",
