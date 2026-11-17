@@ -1,0 +1,57 @@
+{
+  "schema_version": "1.0",
+  "character_id": "female_02",
+  "display_name": "Female 02",
+  "status": "placeholder",
+  "physical_description": null,
+  "references": {
+    "front": [],
+    "side": [],
+    "back": [],
+    "close_up": [],
+    "full_body": [],
+    "other": []
+  },
+  "styling_rules": {
+    "default_wardrobe": [],
+    "hair": null,
+    "makeup": null,
+    "accessories": [],
+    "forbidden": [
+      "Logos or brand marks other than the advertised product",
+      "Wardrobe that conflicts with the brief's brand guidelines"
+    ]
+  },
+  "identity_consistency_instructions": [
+    "Keep the exact face shown in the attached female_02 reference images: same face shape, eye shape, nose, lips, eyebrows and skin tone in every clip.",
+    "Keep the same apparent age, body proportions and height across all scenes.",
+    "Keep the hairstyle and hair colour from the reference images unless the production explicitly lists a hair change under allowed variations.",
+    "Use only female_02 reference images. Never combine them with references of any other character.",
+    "If the model drifts (different face, age or ethnicity), reject the clip; do not try to correct it in post."
+  ],
+  "allowed_variations": [
+    "Facial expression and natural speaking mouth movement",
+    "Lighting and colour temperature that fit the scene",
+    "Wardrobe changes only when listed in the production's wardrobe plan"
+  ],
+  "disallowed_variations": [
+    "Changing facial features, apparent age, skin tone or body type",
+    "Adding tattoos, piercings, scars or glasses not present in the references",
+    "Blending features from another character"
+  ],
+  "voice": {
+    "description": null,
+    "language": null,
+    "is_cloned_from_real_person": false,
+    "clone_authorization_reference": null
+  },
+  "commercial_use": {
+    "authorized": false,
+    "rights_holder": null,
+    "license_reference": null,
+    "authorized_uses": [],
+    "expires_on": null,
+    "notes": "Fill in before status can become 'active'. Record who owns this character's likeness and what uses are licensed."
+  },
+  "notes": "PLACEHOLDER. Add reference images to characters/female_02/references/, list them above, have a human write physical_description from the images, complete commercial_use, then set status to 'active'."
+}

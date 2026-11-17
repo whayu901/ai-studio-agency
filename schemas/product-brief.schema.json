@@ -1,0 +1,121 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "product-brief.schema.json",
+  "title": "Product brief",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "brief_id",
+    "is_sample",
+    "brand",
+    "product",
+    "product_images",
+    "verified_claims",
+    "prohibited_claims",
+    "target_audience",
+    "campaign",
+    "deliverable",
+    "script"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "brief_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{1,63}$" },
+    "is_sample": { "type": "boolean", "description": "true = fictional demo data; never deliver commercially." },
+    "brand": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "guidelines"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "guidelines": { "$ref": "#/$defs/stringList" },
+        "colors": { "$ref": "#/$defs/stringList" }
+      }
+    },
+    "product": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "category", "description", "key_features", "visual_identity"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "category": { "type": "string", "minLength": 1 },
+        "description": { "type": "string", "minLength": 1 },
+        "variants": { "$ref": "#/$defs/stringList" },
+        "key_features": { "$ref": "#/$defs/stringList" },
+        "visual_identity": {
+          "description": "What must look correct on screen (shape, colour, label, logo placement).",
+          "$ref": "#/$defs/stringList"
+        },
+        "price": { "type": ["string", "null"] },
+        "where_to_buy": { "type": ["string", "null"] }
+      }
+    },
+    "product_images": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^assets/products/[^/].*\\.(jpg|jpeg|png|webp)$" }
+    },
+    "verified_claims": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["claim", "source"],
+        "properties": {
+          "claim": { "type": "string", "minLength": 1 },
+          "source": { "type": "string", "minLength": 1, "description": "Where the claim is substantiated." }
+        }
+      }
+    },
+    "prohibited_claims": { "$ref": "#/$defs/stringList" },
+    "target_audience": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["description", "locale", "language"],
+      "properties": {
+        "description": { "type": "string", "minLength": 1 },
+        "age_range": { "type": ["string", "null"] },
+        "locale": { "type": "string" },
+        "language": { "type": "string" },
+        "pain_points": { "$ref": "#/$defs/stringList" }
+      }
+    },
+    "campaign": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["objective", "tone", "cta", "platforms"],
+      "properties": {
+        "objective": { "type": "string", "minLength": 1 },
+        "concept_direction": { "type": ["string", "null"] },
+        "tone": { "$ref": "#/$defs/stringList" },
+        "cta": { "type": "string", "minLength": 1 },
+        "platforms": { "$ref": "#/$defs/stringList" }
+      }
+    },
+    "deliverable": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["duration_seconds", "aspect_ratio", "visual_style"],
+      "properties": {
+        "duration_seconds": { "type": "number", "exclusiveMinimum": 0, "maximum": 180 },
+        "aspect_ratio": { "enum": ["9:16", "16:9", "1:1", "4:5"] },
+        "visual_style": { "type": "string", "minLength": 1 },
+        "preferred_character_id": { "type": ["string", "null"] }
+      }
+    },
+    "script": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "custom_script", "language"],
+      "properties": {
+        "mode": { "enum": ["custom", "ai_generated"] },
+        "custom_script": { "type": ["string", "null"] },
+        "language": { "type": "string" }
+      }
+    },
+    "mandatory_elements": { "$ref": "#/$defs/stringList" },
+    "restrictions": { "$ref": "#/$defs/stringList" }
+  },
+  "$defs": {
+    "stringList": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+  }
+}

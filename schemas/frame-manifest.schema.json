@@ -1,0 +1,122 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "frame-manifest.schema.json",
+  "title": "Timestamped frame-extraction manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["manifest_version", "generated_at", "tool", "source", "rights", "sampling", "frames", "audio", "limitations"],
+  "properties": {
+    "manifest_version": { "const": "1.0" },
+    "generated_at": { "type": "string" },
+    "tool": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "version", "ffmpeg_version"],
+      "properties": {
+        "name": { "type": "string" },
+        "version": { "type": "string" },
+        "ffmpeg_version": { "type": ["string", "null"] }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "filename",
+        "size_bytes",
+        "sha256",
+        "container",
+        "duration_seconds",
+        "width",
+        "height",
+        "display_width",
+        "display_height",
+        "rotation_degrees",
+        "fps",
+        "video_codec",
+        "has_audio",
+        "audio_codec"
+      ],
+      "properties": {
+        "path": { "type": "string" },
+        "filename": { "type": "string" },
+        "size_bytes": { "type": "integer", "minimum": 0 },
+        "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "container": { "type": ["string", "null"] },
+        "duration_seconds": { "type": "number", "exclusiveMinimum": 0 },
+        "width": { "type": "integer", "minimum": 1 },
+        "height": { "type": "integer", "minimum": 1 },
+        "display_width": { "type": "integer", "minimum": 1 },
+        "display_height": { "type": "integer", "minimum": 1 },
+        "rotation_degrees": { "type": "integer" },
+        "fps": { "type": ["number", "null"] },
+        "video_codec": { "type": ["string", "null"] },
+        "has_audio": { "type": "boolean" },
+        "audio_codec": { "type": ["string", "null"] }
+      }
+    },
+    "rights": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["basis", "note"],
+      "properties": {
+        "basis": { "enum": ["owned", "licensed", "written_permission", "internal_test_only"] },
+        "note": { "type": ["string", "null"] }
+      }
+    },
+    "sampling": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "interval_seconds",
+        "start_seconds",
+        "end_seconds",
+        "max_frames",
+        "fit_to_max_frames",
+        "planned_frame_count",
+        "extracted_frame_count",
+        "truncated",
+        "image_format",
+        "max_long_edge_px"
+      ],
+      "properties": {
+        "interval_seconds": { "type": "number", "exclusiveMinimum": 0 },
+        "start_seconds": { "type": "number", "minimum": 0 },
+        "end_seconds": { "type": "number", "minimum": 0 },
+        "max_frames": { "type": "integer", "minimum": 1 },
+        "fit_to_max_frames": { "type": "boolean" },
+        "planned_frame_count": { "type": "integer", "minimum": 0 },
+        "extracted_frame_count": { "type": "integer", "minimum": 0 },
+        "truncated": { "type": "boolean" },
+        "image_format": { "enum": ["jpg", "png"] },
+        "max_long_edge_px": { "type": ["integer", "null"], "minimum": 16 }
+      }
+    },
+    "frames": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["index", "timestamp_seconds", "timecode", "path"],
+        "properties": {
+          "index": { "type": "integer", "minimum": 1 },
+          "timestamp_seconds": { "type": "number", "minimum": 0 },
+          "timecode": { "type": "string", "pattern": "^\\d{2}:\\d{2}:\\d{2}\\.\\d{3}$" },
+          "path": { "type": "string", "description": "Relative to the manifest's folder." }
+        }
+      }
+    },
+    "audio": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["path", "format", "purpose"],
+      "properties": {
+        "path": { "type": "string" },
+        "format": { "type": "string" },
+        "purpose": { "const": "manual_review_only" }
+      }
+    },
+    "limitations": { "type": "array", "items": { "type": "string" } }
+  }
+}

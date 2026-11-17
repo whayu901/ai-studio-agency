@@ -1,0 +1,68 @@
+{
+  "schema_version": "1.0",
+  "brief_id": "demo-001",
+  "is_sample": true,
+  "brand": {
+    "name": "Arka (FICTIONAL DEMO BRAND)",
+    "guidelines": [
+      "This brand and all its claims are invented for testing the pipeline. Never deliver this ad commercially.",
+      "Friendly, practical, no exaggeration",
+      "Show the product in everyday use, not in a studio"
+    ],
+    "colors": ["sage green", "matte white"]
+  },
+  "product": {
+    "name": "Arka Insulated Tumbler 600 ml",
+    "category": "Drinkware",
+    "description": "Double-wall stainless-steel tumbler with a flip-top lid and carry loop.",
+    "variants": ["Sage Green", "Matte White"],
+    "key_features": ["Double-wall insulation", "Flip-top lid with lock", "Carry loop", "Fits most car cup holders"],
+    "visual_identity": [
+      "Cylindrical body that tapers slightly towards the base",
+      "Sage green matte finish (for this ad)",
+      "Small embossed 'ARKA' wordmark on the front, about one third from the top",
+      "White flip-top lid with a loop handle"
+    ],
+    "price": null,
+    "where_to_buy": "Link in bio"
+  },
+  "product_images": ["assets/products/arka-tumbler-front.jpg"],
+  "verified_claims": [
+    { "claim": "Keeps drinks cold for up to 24 hours", "source": "SAMPLE: fictional internal test report AT-2026-01" },
+    { "claim": "600 ml capacity", "source": "SAMPLE: fictional product specification sheet" },
+    { "claim": "Leak-proof when the lid is closed and locked", "source": "SAMPLE: fictional internal test report AT-2026-02" }
+  ],
+  "prohibited_claims": [
+    "Keeps drinks hot (not tested)",
+    "Any health or weight-loss benefit",
+    "'Best', 'number one', or comparisons with named competitors",
+    "Dishwasher safe (not tested)"
+  ],
+  "target_audience": {
+    "description": "Urban office workers and commuters aged 22–35 who carry iced coffee or water through a hot day",
+    "age_range": "22-35",
+    "locale": "ID",
+    "language": "en",
+    "pain_points": ["Ice melts before lunch", "Bags get wet from leaking bottles"]
+  },
+  "campaign": {
+    "objective": "Awareness + click-through to the shop link",
+    "concept_direction": "Authentic 'it actually works' creator moment, filmed on a phone",
+    "tone": ["casual", "honest", "upbeat"],
+    "cta": "Link in bio",
+    "platforms": ["TikTok", "Instagram Reels"]
+  },
+  "deliverable": {
+    "duration_seconds": 8,
+    "aspect_ratio": "9:16",
+    "visual_style": "Natural smartphone selfie video, daylight, realistic, lightly handheld",
+    "preferred_character_id": "female_02"
+  },
+  "script": {
+    "mode": "ai_generated",
+    "custom_script": null,
+    "language": "en"
+  },
+  "mandatory_elements": ["Product visible within the first 2 seconds", "Spoken CTA in the last 2 seconds"],
+  "restrictions": ["No on-screen prices", "No other brands visible"]
+}

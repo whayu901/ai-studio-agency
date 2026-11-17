@@ -1,0 +1,32 @@
+{
+  "schema_version": "1.0",
+  "verified_by_user_on": null,
+  "notes": [
+    "This file describes what YOUR Google Flow account can do. Nothing here is checked automatically.",
+    "Flow models, modes, clip lengths and limits change, and they differ by plan and region. Open Flow, look at what you can actually select, and edit these values to match.",
+    "When a value is null it is unknown. Prompts treat it as 'do not rely on this'.",
+    "After checking in the Flow UI, set 'verified': true on the model and fill in verified_by_user_on (YYYY-MM-DD)."
+  ],
+  "default_model_id": "omni-flash-1.2",
+  "models": [
+    {
+      "model_id": "omni-flash-1.2",
+      "label": "Omni Flash 1.2",
+      "enabled": true,
+      "verified": false,
+      "generation_modes": ["text_to_video", "frames_to_video", "ingredients_to_video", "video_to_video"],
+      "max_clip_seconds": 8,
+      "max_ingredients": 3,
+      "aspect_ratios": ["9:16", "16:9"],
+      "generates_audio": null,
+      "supports_spoken_dialogue": null,
+      "notes": "Unverified starter values. Confirm each mode actually appears for this model in your Flow UI, plus the clip length and ingredient limit. Disable any mode you cannot see."
+    }
+  ],
+  "generation_modes": {
+    "text_to_video": "Prompt only. Weakest identity control; use only for B-roll without the character.",
+    "frames_to_video": "Start (and optionally end) image + prompt. Best for locking composition and continuity between clips.",
+    "ingredients_to_video": "Reference images (character, product) + prompt. Main mode for keeping the character's identity.",
+    "video_to_video": "Edit/extend an existing clip. Use only on clips you own (your own previous renders)."
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "schema_version": "1.0",
+  "characters": [
+    { "character_id": "female_01", "profile": "characters/female_01/character.json" },
+    { "character_id": "female_02", "profile": "characters/female_02/character.json" }
+  ]
+}

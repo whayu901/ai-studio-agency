@@ -1,0 +1,133 @@
+{
+  "schema_version": "1.0",
+  "job_id": "demo-001",
+  "mode": "original",
+  "character_id": "female_02",
+  "brief": "briefs/demo-001/brief.json",
+  "reference_video_manifest": null,
+  "duration_seconds": 8,
+  "aspect_ratio": "9:16",
+  "visual_style": "Natural smartphone selfie video, daylight, realistic, lightly handheld",
+  "prompt_versions": { "original-creation": "0.1.0", "google-flow": "0.1.0" },
+  "concept": {
+    "title": "Still ice at 5 PM",
+    "angle": "Honest end-of-day proof moment: she shakes the tumbler and the ice from the morning still rattles.",
+    "hook": "The sound and sight of ice rattling at the end of a workday, tumbler close to the lens in the first second.",
+    "key_message": "Arka keeps drinks cold for up to 24 hours.",
+    "target_audience": "Office workers and commuters, 22–35, hot-climate city",
+    "alternatives_considered": [
+      "Problem→solution: melted-ice plastic cup vs tumbler (needs two props and a cut, too much for 8 s)",
+      "Leak test: tumbler upside-down in a tote bag (leak-proof claim, but weaker visual hook)"
+    ]
+  },
+  "script": "Seven a.m. ice… still here. Arka keeps drinks cold up to twenty-four hours. Link in bio!",
+  "claims_used": ["Keeps drinks cold for up to 24 hours"],
+  "storyboard": [
+    {
+      "shot_id": "S01",
+      "clip_id": "C01",
+      "start_seconds": 0.0,
+      "end_seconds": 2.0,
+      "purpose": "hook",
+      "setting": "Modern office desk by a window, late afternoon",
+      "lighting": "Warm window light from camera left",
+      "framing": "Medium close-up, eye level, phone held at arm's length (selfie)",
+      "camera_movement": "Handheld, subtle natural shake",
+      "action": "She lifts the sage-green tumbler close to the lens and gives it a gentle shake",
+      "gestures": "Tumbler held in right hand, label side towards camera",
+      "facial_expression": "Curious, eyebrows raised",
+      "dialogue": "Seven a.m. ice… still here.",
+      "on_screen_text": "5:00 PM (added in editing)",
+      "product_visibility": "Fills the lower third of frame, embossed wordmark visible",
+      "transition_out": "Continuous (no cut)"
+    },
+    {
+      "shot_id": "S02",
+      "clip_id": "C01",
+      "start_seconds": 2.0,
+      "end_seconds": 5.5,
+      "purpose": "benefit",
+      "setting": "Same desk",
+      "lighting": "Same warm window light from camera left",
+      "framing": "Medium close-up, tumbler pulled back to chest height",
+      "camera_movement": "Handheld, slight drift as she talks",
+      "action": "She flips the lid open, glances inside, then looks back at camera",
+      "gestures": "Thumb flips the lid; small approving nod",
+      "facial_expression": "Pleasantly surprised, relaxed smile",
+      "dialogue": "Arka keeps drinks cold up to twenty-four hours.",
+      "on_screen_text": null,
+      "product_visibility": "Held at chest height, front facing camera, lid open",
+      "transition_out": "Continuous (no cut)"
+    },
+    {
+      "shot_id": "S03",
+      "clip_id": "C01",
+      "start_seconds": 5.5,
+      "end_seconds": 8.0,
+      "purpose": "cta",
+      "setting": "Same desk",
+      "lighting": "Same warm window light from camera left",
+      "framing": "Medium close-up",
+      "camera_movement": "Handheld, steady",
+      "action": "She closes the lid and points down towards the caption area",
+      "gestures": "Index finger points down; tumbler stays in frame",
+      "facial_expression": "Warm, friendly smile",
+      "dialogue": "Link in bio!",
+      "on_screen_text": "Link in bio (added in editing)",
+      "product_visibility": "Front facing camera, lid closed",
+      "transition_out": "End"
+    }
+  ],
+  "character_consistency": [
+    "Attach only female_02 references: close-up first (face), then front (body/wardrobe).",
+    "Refer to her only as 'the woman from the reference images'. Her physical description is not yet written in the profile.",
+    "Wardrobe for C01: plain light-coloured office top, no visible logos. Keep it the same for the whole clip.",
+    "Keep hair exactly as in the references; no hair change in this production.",
+    "Single location and single light direction (window, camera left) for the whole video."
+  ],
+  "flow_prompts": [
+    {
+      "clip_id": "C01",
+      "start_seconds": 0.0,
+      "end_seconds": 8.0,
+      "model_id": "omni-flash-1.2",
+      "generation_mode": "ingredients_to_video",
+      "ingredients": [
+        "characters/female_02/references/female_02_closeup_01.jpg",
+        "characters/female_02/references/female_02_front_01.jpg",
+        "assets/products/arka-tumbler-front.jpg"
+      ],
+      "start_frame": null,
+      "end_frame": null,
+      "prompt": "Vertical 9:16 smartphone selfie video, medium close-up, eye level, handheld with subtle natural shake, one continuous take. The woman from the reference images, wearing a plain light-coloured office top, sits at a modern office desk by a window in late-afternoon light coming from the left. 0–2s: she lifts a sage-green insulated tumbler close to the lens and gently shakes it, eyebrows raised, and says to camera: \"Seven a.m. ice… still here.\" 2–5s: she pulls it back to chest height, flips the white lid open with her thumb, glances inside, nods and smiles: \"Arka keeps drinks cold up to twenty-four hours.\" 5–8s: she closes the lid and points down with a warm smile: \"Link in bio!\" Keep the tumbler's exact shape, colour and embossed wordmark from the product image. Natural skin texture, realistic hands with five fingers, true-to-life phone colour, slight auto-exposure shift, no on-screen text, no music, soft office room tone.",
+      "avoid": ["different face", "extra fingers", "text on screen", "logo changes", "camera cuts", "other brands"],
+      "dialogue": "Seven a.m. ice… still here. Arka keeps drinks cold up to twenty-four hours. Link in bio!",
+      "continuity_from": null,
+      "notes": "Model capabilities unverified — confirm mode and limits in Flow before generating. Spoken dialogue support is unknown: if speech is wrong or missing, render without dialogue and add a voice-over in editing."
+    }
+  ],
+  "reference_assets": [
+    { "path": "characters/female_02/references/female_02_closeup_01.jpg", "kind": "character_reference", "character_id": "female_02", "rights_basis": "internal_test_only" },
+    { "path": "characters/female_02/references/female_02_front_01.jpg", "kind": "character_reference", "character_id": "female_02", "rights_basis": "internal_test_only" },
+    { "path": "assets/products/arka-tumbler-front.jpg", "kind": "product_image", "character_id": null, "rights_basis": "internal_test_only" }
+  ],
+  "quality_checks": [
+    { "check_id": "QC01", "dimension": "Face consistency with references", "clip_id": "C01", "min_pass_score": 4, "score": null, "notes": "" },
+    { "check_id": "QC02", "dimension": "Body and wardrobe consistency", "clip_id": "C01", "min_pass_score": 4, "score": null, "notes": "" },
+    { "check_id": "QC03", "dimension": "Natural motion", "clip_id": "C01", "min_pass_score": 3, "score": null, "notes": "" },
+    { "check_id": "QC04", "dimension": "Hand and finger accuracy", "clip_id": "C01", "min_pass_score": 3, "score": null, "notes": "Watch the thumb on the flip lid at 2–3 s." },
+    { "check_id": "QC05", "dimension": "Product integrity (shape, colour, label)", "clip_id": "C01", "min_pass_score": 4, "score": null, "notes": "" },
+    { "check_id": "QC06", "dimension": "Camera realism (smartphone look)", "clip_id": "C01", "min_pass_score": 3, "score": null, "notes": "" },
+    { "check_id": "QC07", "dimension": "Speech accuracy vs script", "clip_id": "C01", "min_pass_score": 3, "score": null, "notes": "" },
+    { "check_id": "QC08", "dimension": "Lip-sync accuracy", "clip_id": "C01", "min_pass_score": 3, "score": null, "notes": "" },
+    { "check_id": "QC09", "dimension": "Visual artifacts (warping, flicker, extra limbs)", "clip_id": "C01", "min_pass_score": 4, "score": null, "notes": "" },
+    { "check_id": "QC10", "dimension": "Copyright and commercial-use clearance", "clip_id": null, "min_pass_score": 5, "score": null, "notes": "Sample brief: internal test only, can never pass for commercial delivery." }
+  ],
+  "status": "READY_FOR_MANUAL_RENDER",
+  "human_review": {
+    "required": true,
+    "reviewer": null,
+    "approved_on": null,
+    "notes": "Expected output for the demo brief. Before rendering, add female_02_closeup_01.jpg and female_02_front_01.jpg to characters/female_02/references/ and list them in character.json, add assets/products/arka-tumbler-front.jpg, and set female_02 to 'active'. `validate.py production … --check-ready` lists exactly what is missing."
+  }
+}

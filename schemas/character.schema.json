@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "character.schema.json",
+  "title": "Virtual character profile",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "character_id",
+    "display_name",
+    "status",
+    "physical_description",
+    "references",
+    "styling_rules",
+    "identity_consistency_instructions",
+    "allowed_variations",
+    "disallowed_variations",
+    "commercial_use"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "character_id": { "type": "string", "pattern": "^[a-z][a-z0-9_]{1,39}$" },
+    "display_name": { "type": "string", "minLength": 1 },
+    "status": {
+      "type": "string",
+      "enum": ["placeholder", "active", "retired"],
+      "description": "placeholder = no verified references yet; active = usable in productions."
+    },
+    "physical_description": {
+      "type": ["string", "null"],
+      "description": "Written by a human FROM the reference images. Null until then — never invented."
+    },
+    "references": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["front", "side", "back", "close_up"],
+      "properties": {
+        "front": { "$ref": "#/$defs/pathList" },
+        "side": { "$ref": "#/$defs/pathList" },
+        "back": { "$ref": "#/$defs/pathList" },
+        "close_up": { "$ref": "#/$defs/pathList" },
+        "full_body": { "$ref": "#/$defs/pathList" },
+        "other": { "$ref": "#/$defs/pathList" }
+      }
+    },
+    "styling_rules": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["default_wardrobe", "hair", "makeup", "accessories", "forbidden"],
+      "properties": {
+        "default_wardrobe": { "$ref": "#/$defs/stringList" },
+        "hair": { "type": ["string", "null"] },
+        "makeup": { "type": ["string", "null"] },
+        "accessories": { "$ref": "#/$defs/stringList" },
+        "forbidden": { "$ref": "#/$defs/stringList" }
+      }
+    },
+    "identity_consistency_instructions": { "$ref": "#/$defs/stringList" },
+    "allowed_variations": { "$ref": "#/$defs/stringList" },
+    "disallowed_variations": { "$ref": "#/$defs/stringList" },
+    "voice": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "description": { "type": ["string", "null"] },
+        "language": { "type": ["string", "null"] },
+        "is_cloned_from_real_person": { "type": "boolean" },
+        "clone_authorization_reference": { "type": ["string", "null"] }
+      }
+    },
+    "commercial_use": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["authorized", "rights_holder", "license_reference", "authorized_uses", "expires_on", "notes"],
+      "properties": {
+        "authorized": { "type": "boolean" },
+        "rights_holder": { "type": ["string", "null"] },
+        "license_reference": { "type": ["string", "null"] },
+        "authorized_uses": { "$ref": "#/$defs/stringList" },
+        "expires_on": {
+          "type": ["string", "null"],
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "notes": { "type": "string" }
+      }
+    },
+    "notes": { "type": "string" }
+  },
+  "$defs": {
+    "stringList": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+    "pathList": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^characters/[a-z][a-z0-9_]{1,39}/references/[^/].*\\.(jpg|jpeg|png|webp|heic)$"
+      }
+    }
+  }
+}

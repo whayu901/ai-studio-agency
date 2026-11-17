@@ -1,0 +1,55 @@
+# ------------------------------------------------------------------
+# AI Creative Studio — keep private media and generated files OUT of Git
+# ------------------------------------------------------------------
+
+# Private character reference images (only the folder placeholder is tracked)
+characters/*/references/*
+!characters/*/references/.gitkeep
+
+# Customer / product assets and reference videos
+assets/products/*
+!assets/products/.gitkeep
+assets/reference-videos/*
+!assets/reference-videos/.gitkeep
+
+# Everything generated: frames, manifests, renders, audio, production runs
+outputs/*
+!outputs/.gitkeep
+
+# Media anywhere else in the repo (belt and braces)
+*.mp4
+*.mov
+*.m4v
+*.webm
+*.mkv
+*.avi
+*.wav
+*.mp3
+*.m4a
+*.aac
+*.jpg
+*.jpeg
+*.png
+*.webp
+*.heic
+*.gif
+
+# Your real experiment log may contain client names and spend; the template is tracked
+experiments/*.csv
+!experiments/experiment-log-template.csv
+
+# Secrets — never commit these
+.env
+.env.*
+*.key
+*.pem
+secrets/
+credentials*.json
+
+# Python / OS noise
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+venv/
+.DS_Store
