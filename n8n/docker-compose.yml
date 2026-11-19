@@ -1,0 +1,50 @@
+# Local n8n for AI Creative Studio. Listens on 127.0.0.1 only (never exposed to the network).
+#   bash scripts/setup-local-env.sh          # once: writes n8n/.env and web/.env.local with a shared token
+#   docker compose -f n8n/docker-compose.yml --env-file n8n/.env up -d
+#   bash scripts/n8n-import.sh                # import + activate the ACS workflows
+name: acs-n8n
+services:
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:1.123.99
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${N8N_HOST_PORT:-5678}:5678"
+    environment:
+      N8N_HOST: localhost
+      N8N_PORT: "5678"
+      N8N_PROTOCOL: http
+      WEBHOOK_URL: http://localhost:${N8N_HOST_PORT:-5678}/
+      N8N_SECURE_COOKIE: "false"           # plain http on localhost
+      N8N_DIAGNOSTICS_ENABLED: "false"
+      N8N_VERSION_NOTIFICATIONS_ENABLED: "false"
+      N8N_TEMPLATES_ENABLED: "false"
+      N8N_PERSONALIZATION_ENABLED: "false"
+      N8N_HIRING_BANNER_ENABLED: "false"
+      N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS: "true"
+      N8N_RUNNERS_ENABLED: "true"
+      # The ACS workflows read ACS_APP_URL / ACS_ORCHESTRATOR_TOKEN with $env, so no credential is
+      # stored in the workflow files. This lets workflow expressions read the container env: keep
+      # n8n local and single-user.
+      N8N_BLOCK_ENV_ACCESS_IN_NODE: "false"
+      N8N_ENCRYPTION_KEY: ${N8N_ENCRYPTION_KEY:?run scripts/setup-local-env.sh first}
+      GENERIC_TIMEZONE: ${GENERIC_TIMEZONE:-Asia/Jakarta}
+      TZ: ${GENERIC_TIMEZONE:-Asia/Jakarta}
+      EXECUTIONS_DATA_PRUNE: "true"
+      EXECUTIONS_DATA_MAX_AGE: "336"       # hours (14 days)
+      # Inside the container "localhost" is the container itself; the app on the Mac host is
+      # reached through Docker Desktop's host.docker.internal name.
+      ACS_APP_URL: ${ACS_APP_URL:-http://host.docker.internal:3000}
+      ACS_ORCHESTRATOR_TOKEN: ${ACS_ORCHESTRATOR_TOKEN:?run scripts/setup-local-env.sh first}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - n8n_data:/home/node/.n8n          # persistent: survives container restarts and upgrades
+      - ./workflows:/workflows:ro
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:5678/healthz >/dev/null 2>&1 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+volumes:
+  n8n_data:

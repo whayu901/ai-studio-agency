@@ -1,0 +1,76 @@
+{
+  "id": "acsWfErrors00001",
+  "name": "ACS E · Error handling",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "95816716-d290-5792-994a-24bf429078ba",
+      "name": "Error Trigger",
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.ACS_APP_URL }}/api/orchestrator/errors",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-acs-token",
+              "value": "={{ $env.ACS_ORCHESTRATOR_TOKEN }}"
+            },
+            {
+              "name": "x-acs-execution-id",
+              "value": "={{ $json.execution.id }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ execution_id: String($json.execution.id || ''), workflow: $json.workflow.name, message: String(($json.execution.error && $json.execution.error.message) || 'unknown error').slice(0, 3000), last_node: $json.execution.lastNodeExecuted || null }) }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "1a7f838e-ccd6-585d-a51e-8e3b3be738e0",
+      "name": "Record error in app",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        250,
+        300
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 3000,
+      "notes": "Marks the job FAILED (history kept); a person retries from the dashboard (bounded by ACS_MAX_RETRIES)."
+    }
+  ],
+  "connections": {
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "Record error in app",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "tags": []
+}

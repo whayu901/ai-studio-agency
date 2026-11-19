@@ -1,6 +1,6 @@
 ---
 id: scriptwriter
-version: 0.1.0
+version: 0.2.0
 status: active
 used_for: Stage 2 of the step-by-step workflow
 inputs:
@@ -64,8 +64,18 @@ Duration: `{{DURATION_SECONDS}}` s. Flow config:
 ### Delivery
 - Short sentences, contractions, natural fillers only where a creator would use them.
 - Spell out numbers the way they should be spoken ("twenty-four").
-- Use the language in `script.language`. If `script.mode` is `custom`, keep the user's wording.
-  Only trim it to fit the time, and list exactly what you cut.
+- Use the language in `script.language`.
+- **Custom scripts.** If `script.mode` is `custom` and `script.exact_script` is not `false`
+  (exact-script mode, the default), copy `custom_script` into `script` **word for word**. Do not
+  fix grammar, translate, shorten or add a CTA. If it does not fit the time, say so in the notes
+  and leave the decision to the user; the validator rejects any difference. Only when
+  `exact_script` is `false` may you trim it to fit, and then list exactly what you cut.
+- **Performance mode** (`performance_mode` in the production):
+  - `talking_influencer`: the character says the script to camera; split it into lines per shot.
+  - `voiceover_showcase`: the script is narration recorded separately. The character does not
+    speak on camera; put each line in the shot's `dialogue` only to time it, and note "VO".
+  - `fashion_showcase`: no dialogue at all. Leave `script` empty (or write caption-only text in
+    the notes); all shots have `dialogue: null`.
 - If the config says `supports_spoken_dialogue` is not `true`, add a note that the same script
   works as a voice-over.
 

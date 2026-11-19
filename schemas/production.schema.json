@@ -29,6 +29,8 @@
     "schema_version": { "const": "1.0" },
     "job_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{1,63}$" },
     "mode": { "enum": ["original", "reference_guided"] },
+    "performance_mode": { "enum": ["talking_influencer", "fashion_showcase", "voiceover_showcase"], "description": "talking_influencer = speaks to camera; fashion_showcase = no dialogue; voiceover_showcase = no on-camera speech, separate narration." },
+    "video_provider": { "enum": ["google_flow", "seedance"], "description": "Where a person renders the clips by hand." },
     "character_id": { "type": "string", "pattern": "^[a-z][a-z0-9_]{1,39}$" },
     "brief": { "type": "string", "description": "Repo-relative path to the brief JSON." },
     "reference_video_manifest": {
@@ -65,6 +67,12 @@
     "storyboard": { "type": "array", "items": { "$ref": "#/$defs/shot" } },
     "character_consistency": { "$ref": "#/$defs/stringList" },
     "flow_prompts": { "type": "array", "items": { "$ref": "#/$defs/flowPrompt" } },
+    "seedance_prompts": { "type": "array", "items": { "$ref": "#/$defs/seedancePrompt" } },
+    "continuity": {
+      "type": "array",
+      "description": "What must carry over from one clip to the next (multi-clip ads).",
+      "items": { "$ref": "#/$defs/continuityLink" }
+    },
     "reference_assets": { "type": "array", "items": { "$ref": "#/$defs/asset" } },
     "quality_checks": { "type": "array", "items": { "$ref": "#/$defs/qualityCheck" } },
     "status": {
@@ -162,6 +170,38 @@
         "dialogue": { "type": ["string", "null"] },
         "continuity_from": { "type": ["string", "null"], "pattern": "^C[0-9]{2,3}$" },
         "notes": { "type": "string" }
+      }
+    },
+    "seedancePrompt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["clip_id", "start_seconds", "end_seconds", "model_id", "generation_mode", "first_frame", "reference_images", "prompt", "motion", "camera", "dialogue"],
+      "properties": {
+        "clip_id": { "type": "string", "pattern": "^C[0-9]{2,3}$" },
+        "start_seconds": { "$ref": "#/$defs/seconds" },
+        "end_seconds": { "$ref": "#/$defs/seconds" },
+        "model_id": { "type": "string", "description": "An id from config/seedance.json" },
+        "generation_mode": { "enum": ["image_to_video", "reference_to_video", "text_to_video"] },
+        "first_frame": { "type": ["string", "null"], "description": "Repo-relative first-frame image (image_to_video)." },
+        "reference_images": { "type": "array", "items": { "type": "string" } },
+        "prompt": { "type": "string", "minLength": 1 },
+        "motion": { "$ref": "#/$defs/stringList" },
+        "camera": { "type": "string" },
+        "avoid": { "$ref": "#/$defs/stringList" },
+        "dialogue": { "type": ["string", "null"] },
+        "continuity_from": { "type": ["string", "null"], "pattern": "^C[0-9]{2,3}$" },
+        "notes": { "type": "string" }
+      }
+    },
+    "continuityLink": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["from_clip", "to_clip", "carry_over"],
+      "properties": {
+        "from_clip": { "type": "string", "pattern": "^C[0-9]{2,3}$" },
+        "to_clip": { "type": "string", "pattern": "^C[0-9]{2,3}$" },
+        "end_state": { "type": "string" },
+        "carry_over": { "$ref": "#/$defs/stringList" }
       }
     },
     "asset": {

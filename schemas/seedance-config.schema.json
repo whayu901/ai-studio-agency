@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "seedance-config.schema.json",
+  "title": "User-maintained Seedance / Dreamina capability config (manual web UI)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "verified_by_user_on", "default_model_id", "models", "generation_modes"],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "verified_by_user_on": { "type": ["string", "null"], "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+    "notes": { "type": "array", "items": { "type": "string" } },
+    "default_model_id": { "type": "string" },
+    "models": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["model_id", "label", "enabled", "verified", "generation_modes", "max_clip_seconds", "clip_durations", "max_reference_images", "aspect_ratios", "generates_audio", "supports_spoken_dialogue"],
+        "properties": {
+          "model_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9.\\-]*$" },
+          "label": { "type": "string" },
+          "enabled": { "type": "boolean" },
+          "verified": { "type": "boolean" },
+          "generation_modes": { "type": "array", "items": { "enum": ["image_to_video", "reference_to_video", "text_to_video"] } },
+          "max_clip_seconds": { "type": "number", "exclusiveMinimum": 0 },
+          "clip_durations": { "type": ["array", "null"], "items": { "type": "number", "exclusiveMinimum": 0 }, "description": "Exact lengths the UI offers; null = any length up to max_clip_seconds." },
+          "max_reference_images": { "type": ["integer", "null"], "minimum": 0 },
+          "aspect_ratios": { "type": "array", "items": { "enum": ["9:16", "16:9", "1:1", "4:5"] } },
+          "generates_audio": { "type": ["boolean", "null"] },
+          "supports_spoken_dialogue": { "type": ["boolean", "null"] },
+          "notes": { "type": "string" }
+        }
+      }
+    },
+    "generation_modes": { "type": "object", "additionalProperties": { "type": "string" } }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "schema_version": "1.0",
+  "scale": { "min": 1, "max": 5, "labels": { "1": "unusable", "2": "poor", "3": "acceptable", "4": "good", "5": "excellent" } },
+  "notes": [
+    "Human review criteria for every rendered video. Scores are entered by a person after watching the full render with sound.",
+    "overall = weighted mean of the scored, applicable categories. A review passes only if every applicable category is scored and meets its min_pass.",
+    "applies_to lists the performance modes a category is used in; elsewhere it is N/A. Edit weights and minimums here; ids QC01-QC10 match tools/qc.py."
+  ],
+  "categories": [
+    { "check_id": "QC01", "label": "Facial identity consistency", "min_pass": 4, "weight": 2, "applies_to": ["talking_influencer", "fashion_showcase", "voiceover_showcase"] },
+    { "check_id": "QC02", "label": "Wardrobe consistency", "min_pass": 4, "weight": 1, "applies_to": ["talking_influencer", "fashion_showcase", "voiceover_showcase"] },
+    { "check_id": "QC11", "label": "Character distinguishing details (tattoos, accessories)", "min_pass": 3, "weight": 1, "applies_to": ["talking_influencer", "fashion_showcase", "voiceover_showcase"] },
+    { "check_id": "QC03", "label": "Natural body motion", "min_pass": 3, "weight": 1, "applies_to": ["talking_influencer", "fashion_showcase", "voiceover_showcase"] },
+    { "check_id": "QC04", "label": "Natural hand movement", "min_pass": 3, "weight": 1, "applies_to": ["talking_influencer", "fashion_showcase", "voiceover_showcase"] },
+    { "check_id": "QC05", "label": "Product geometry consistency", "min_pass": 4, "weight": 2, "applies_to": ["talking_influencer", "fashion_showcase", "voiceover_showcase"] },
+    { "check_id": "QC12", "label": "Product interaction realism", "min_pass": 3, "weight": 1, "applies_to": ["talking_influencer", "fashion_showcase", "voiceover_showcase"] },
+    { "check_id": "QC13", "label": "Background stability", "min_pass": 3, "weight": 1, "applies_to": ["talking_influencer", "fashion_showcase", "voiceover_showcase"] },
+    { "check_id": "QC06", "label": "Camera realism", "min_pass": 3, "weight": 1, "applies_to": ["talking_influencer", "fashion_showcase", "voiceover_showcase"] },
+    { "check_id": "QC14", "label": "Audio quality", "min_pass": 3, "weight": 1, "applies_to": ["talking_influencer", "voiceover_showcase"] },
+    { "check_id": "QC07", "label": "Dialogue accuracy vs script", "min_pass": 3, "weight": 1, "applies_to": ["talking_influencer"] },
+    { "check_id": "QC08", "label": "Lip synchronization", "min_pass": 3, "weight": 1, "applies_to": ["talking_influencer"] },
+    { "check_id": "QC09", "label": "Visual artifacts (warping, flicker, extra limbs)", "min_pass": 4, "weight": 2, "applies_to": ["talking_influencer", "fashion_showcase", "voiceover_showcase"] },
+    { "check_id": "QC10", "label": "Commercial-use clearance", "min_pass": 5, "weight": 1, "applies_to": ["talking_influencer", "fashion_showcase", "voiceover_showcase"] }
+  ]
+}

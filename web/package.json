@@ -1,0 +1,37 @@
+{
+  "name": "ai-creative-studio-web",
+  "version": "0.4.0",
+  "private": true,
+  "description": "Local dashboard and API for AI Creative Studio (mock/manual mode, no paid APIs required).",
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "dev": "next dev -H 127.0.0.1 -p 3000",
+    "build": "next build",
+    "start": "next start -H 127.0.0.1 -p 3000",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:e2e": "node scripts/e2e.mjs",
+    "smoke:n8n": "node scripts/n8n-smoke.mjs"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "1.10.0",
+    "next": "15.5.29",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "4.3.5",
+    "@types/node": "22.19.1",
+    "@types/react": "19.2.7",
+    "@types/react-dom": "19.2.3",
+    "tailwindcss": "4.3.5",
+    "typescript": "5.9.3",
+    "vitest": "5.1.1"
+  },
+  "overrides": {
+    "postcss": "8.5.33"
+  }
+}

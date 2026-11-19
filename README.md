@@ -1,18 +1,47 @@
 # AI Creative Studio
 
-A small, local toolkit for planning realistic **virtual-influencer video ads**:
+A local, human-reviewed production studio for **virtual-influencer video ads**:
 
-- **Claude** (claude.ai or Claude Code) does the creative work: concept, script, storyboard,
-  character-consistency rules and Google Flow prompts.
-- **Google Flow** renders the video. You do that **by hand** in its web app.
-- This repo holds the prompts, character registry, schemas and a few Python tools that check
-  everything is consistent before you spend credits.
+- A **web dashboard** (Next.js, http://localhost:3000) for campaigns, production jobs, briefs,
+  scripts, storyboards, provider prompts, render uploads, quality review and delivery packages.
+- **Claude** does creative work in *manual* mode (export prompt → paste JSON back), or a free
+  deterministic *mock* mode fills every stage from templates. An optional *Anthropic API* mode runs
+  only with your API key and a budget you set.
+- **Google Flow** and **Seedance / Dreamina** render the video **by hand** in their web UIs.
+- **n8n** (optional, local Docker) orchestrates the pipeline; the app stays the source of truth.
+- The original Python tools still do the checking (validation, render sheets, FFmpeg work), from the
+  command line or behind the dashboard.
 
-No API keys, servers, databases or paid add-ons. Everything runs on your Mac.
+Nothing here publishes anything or calls a paid API by default. Everything runs on your Mac.
 
-> **Status (Phase 2):** all prompt roles, the render-sheet generator and the attempt logger are
-> ready. The two characters are still **placeholders**: no reference images have been added yet,
-> and nothing has been rendered.
+## Quick start (dashboard)
+
+```bash
+cd ~/Documents/office/ai-creative-studio
+npm --prefix web ci
+bash scripts/setup-local-env.sh
+npm --prefix web run dev            # http://localhost:3000
+```
+
+Then: **Campaigns → New campaign** → fill in product, claims, character, mode → **Create production
+job** → follow the job's tabs (Brief → Script → Storyboard → Prompt Studio → Render & QC → Delivery).
+
+| Topic | Doc |
+|---|---|
+| Install, configuration, storage | [docs/installation.md](docs/installation.md) |
+| Pages and actions | [docs/dashboard.md](docs/dashboard.md) |
+| Architecture, state machine, data flow | [docs/architecture.md](docs/architecture.md) |
+| Original vs Reference Guided; Talking / Showcase / Voice-over | [docs/production-modes.md](docs/production-modes.md) |
+| Mock, manual Claude and API modes; the ten roles | [docs/agents.md](docs/agents.md) |
+| n8n setup and workflows | [docs/n8n-integration.md](docs/n8n-integration.md) |
+| Google Flow / Seedance | [docs/google-flow.md](docs/google-flow.md), [docs/seedance.md](docs/seedance.md) |
+| Characters | [docs/character-registry.md](docs/character-registry.md) |
+| Quality control | [docs/quality-control.md](docs/quality-control.md) |
+| Tests | [docs/testing.md](docs/testing.md) |
+| Deployment limits, roadmap | [docs/deployment.md](docs/deployment.md), [docs/roadmap.md](docs/roadmap.md) |
+| Audit and final report | [docs/reports/](docs/reports/) |
+
+The sections below describe the command-line workflow, which still works on its own.
 
 ---
 
@@ -24,6 +53,8 @@ No API keys, servers, databases or paid add-ons. Everything runs on your Mac.
 | FFmpeg (includes ffprobe) | `ffmpeg -version` | `brew install ffmpeg` (needs [Homebrew](https://brew.sh)) |
 | Git | `git --version` | `xcode-select --install` |
 | Google Flow access | open labs.google/flow | your Google plan |
+| Node.js 22.13+ (dashboard only) | `node -v` | nodejs.org or `nvm install 22` |
+| Docker Desktop (n8n only, optional) | `docker info` | docker.com |
 
 There are no Python packages to install. Optionally, `python3 -m pip install jsonschema`
 makes the validator use the full JSON Schema library instead of the built-in one.
@@ -313,11 +344,16 @@ has a column for them, so you can tell which prompt changes improved results.
 | `original-creation.md` | 0.1.1 | Whole plan in one pass |
 | `reference-analysis.md` | 0.1.0 | Mode B frame analysis |
 | `creative-director.md` | 0.1.0 | Concept options |
-| `scriptwriter.md` | 0.1.0 | Script within time and claim limits |
+| `scriptwriter.md` | 0.2.0 | Script within time and claim limits; exact-script and performance modes |
 | `storyboard.md` | 0.1.0 | Timestamped shots and clips |
 | `character-consistency.md` | 0.1.0 | Identity plan and drift diagnosis |
 | `google-flow.md` | 0.2.0 | Flow prompts per clip |
 | `caption.md` | 0.1.0 | Post captions with disclosure |
+| `brief-intake.md` | 0.1.0 | Raw notes → brief (optional) |
+| `natural-motion.md` | 0.1.0 | Motion direction per performance mode |
+| `audio-director.md` | 0.1.0 | Audio plan per performance mode |
+| `seedance.md` | 0.1.0 | Seedance / Dreamina prompts per clip |
+| `quality-controller.md` | 0.1.0 | Advisory review notes (never scores) |
 
 ## 11. Tools
 
@@ -333,5 +369,6 @@ has a column for them, so you can tell which prompt changes improved results.
 | `tools/assemble.py` | Kept takes → edited video with on-screen text, AI label, voice-over, loudness |
 | `tools/approve.py` | Human-only sign-off (interactive terminal) that sets `APPROVED` |
 | `tools/package_delivery.py` | Approved edit + captions → `outputs/<job>/delivery/` |
+| `tools/service.py` | JSON bridge the dashboard uses to call these rules |
 
 Every tool has `--help`.

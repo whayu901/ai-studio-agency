@@ -99,7 +99,9 @@
         "duration_seconds": { "type": "number", "exclusiveMinimum": 0, "maximum": 180 },
         "aspect_ratio": { "enum": ["9:16", "16:9", "1:1", "4:5"] },
         "visual_style": { "type": "string", "minLength": 1 },
-        "preferred_character_id": { "type": ["string", "null"] }
+        "preferred_character_id": { "type": ["string", "null"] },
+        "performance_mode": { "enum": ["talking_influencer", "fashion_showcase", "voiceover_showcase"], "description": "talking_influencer = speaks to camera; fashion_showcase = no dialogue; voiceover_showcase = no on-camera speech, separate narration." },
+        "video_provider": { "enum": ["google_flow", "seedance"], "description": "Where a person renders the clips by hand." }
       }
     },
     "script": {
@@ -109,7 +111,8 @@
       "properties": {
         "mode": { "enum": ["custom", "ai_generated"] },
         "custom_script": { "type": ["string", "null"] },
-        "language": { "type": "string" }
+        "language": { "type": "string" },
+        "exact_script": { "type": "boolean", "description": "custom mode: true (default) = use the script word for word; false = may be trimmed to fit." }
       }
     },
     "mandatory_elements": { "$ref": "#/$defs/stringList" },

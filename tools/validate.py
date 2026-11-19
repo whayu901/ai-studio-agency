@@ -6,6 +6,7 @@ Examples (run from the repo root):
     python3 tools/validate.py brief briefs/demo-001/brief.json
     python3 tools/validate.py production briefs/demo-001/expected-production.json --check-ready
     python3 tools/validate.py caption outputs/<job>/caption.json
+    python3 tools/validate.py seedance-config
     python3 tools/validate.py manifest outputs/analysis/my-ref/manifest.json
     python3 tools/validate.py analysis outputs/analysis/my-ref/analysis.json
     python3 tools/validate.py all
@@ -204,6 +205,67 @@ def load_flow_config(root: Path = REPO_ROOT) -> Tuple[Optional[dict], Report]:
     return cfg, rep  # type: ignore[return-value]
 
 
+def load_seedance_config(root: Path = REPO_ROOT) -> Tuple[Optional[dict], Report]:
+    """config/seedance.json: what the user's Dreamina/Seedance web UI offers (manual rendering)."""
+    path = root / "config" / "seedance.json"
+    rep = Report()
+    if not path.exists():
+        rep.error("missing config/seedance.json")
+        return None, rep
+    cfg = load_json(path)
+    rep.extend(schema_check(cfg, "seedance-config.schema.json", "config/seedance.json", root))
+    if not rep.ok:
+        return None, rep
+    ids = [m["model_id"] for m in cfg["models"]]  # type: ignore[index]
+    if cfg["default_model_id"] not in ids:  # type: ignore[index]
+        rep.error("config/seedance.json: default_model_id is not in models")
+    for m in cfg["models"]:  # type: ignore[index]
+        if not m["verified"]:
+            rep.warn(f"Seedance model {m['model_id']!r} capabilities are unverified — check them in the Dreamina UI")
+    return cfg, rep  # type: ignore[return-value]
+
+
+# --------------------------------------------------------------------------- scripts and claims
+
+CLAIM_NEEDED = "[CLAIM NEEDED"
+PERFORMANCE_MODES = ("talking_influencer", "fashion_showcase", "voiceover_showcase")
+
+
+def normalize_script(text: Optional[str]) -> str:
+    """Whitespace-insensitive form used to compare a script with the user's custom script."""
+    return " ".join((text or "").split())
+
+
+def exact_script_required(brief: dict) -> bool:
+    s = brief["script"]
+    return s["mode"] == "custom" and s.get("exact_script", True) is not False
+
+
+def prohibited_terms(brief: dict) -> List[str]:
+    """Short phrases taken from prohibited_claims, for a best-effort scan of the script text.
+
+    'Kulit asli / genuine leather / real leather' -> ['kulit asli', 'genuine leather', 'real leather'].
+    Parenthesised explanations are dropped; long fragments (> 4 words) are skipped because they are
+    descriptions, not phrases anyone would say.
+    """
+    import re as _re
+    terms: List[str] = []
+    for item in brief.get("prohibited_claims", []):
+        text = _re.sub(r"\([^)]*\)", " ", item)
+        for part in _re.split(r"[/,;]| or ", text):
+            part = part.strip(" '\"‘’“”.").lower()
+            part = _re.sub(r"^(saying it is|any|a|an|the)\s+", "", part)
+            if part and 1 <= len(part.split()) <= 4 and len(part) >= 4:
+                terms.append(part)
+    return sorted(set(terms))
+
+
+def scan_script(script: str, brief: dict) -> List[str]:
+    """Prohibited phrases that literally appear in the script (case-insensitive)."""
+    low = f" {script.lower()} "
+    return [t for t in prohibited_terms(brief) if t in low]
+
+
 # --------------------------------------------------------------------------- brief
 
 
@@ -220,6 +282,13 @@ def check_brief(path: Path, root: Path = REPO_ROOT) -> Tuple[Optional[dict], Rep
         rep.error(f"{path}: script.mode is 'custom' but custom_script is empty")
     if not b["verified_claims"]:
         rep.warn(f"{path}: no verified_claims — the script may not make any product claims")
+    if b["script"].get("exact_script") is not None and b["script"]["mode"] != "custom":
+        rep.warn(f"{path}: script.exact_script only applies when script.mode is 'custom'")
+    pm = b["deliverable"].get("performance_mode")
+    if pm == "fashion_showcase" and b["script"]["mode"] == "custom" and b["script"]["custom_script"]:
+        rep.warn(f"{path}: fashion_showcase has no dialogue — the custom script can only be used as on-screen text or captions")
+    if b["script"]["custom_script"] and CLAIM_NEEDED in b["script"]["custom_script"].upper():
+        rep.warn(f"{path}: custom_script contains [CLAIM NEEDED]")
     return b, rep
 
 
@@ -276,6 +345,15 @@ def check_production(path: Path, check_ready: bool = False, root: Path = REPO_RO
             for claim in p.get("claims_used", []):
                 if claim not in verified:
                     rep.error(f"claims_used contains {claim!r}, which is not a verified claim in the brief")
+            if exact_script_required(brief) and p["script"].strip():
+                if normalize_script(p["script"]) != normalize_script(brief["script"]["custom_script"]):
+                    rep.error("exact-script mode: script differs from the brief's custom_script (it must be used word for word; "
+                              "set script.exact_script to false in the brief to allow trimming)")
+            for term in scan_script(p["script"], brief):
+                rep.warn(f"script contains {term!r}, which matches a prohibited claim in the brief — check it")
+            bpm = d.get("performance_mode")
+            if bpm and p.get("performance_mode") and bpm != p["performance_mode"]:
+                rep.warn(f"performance_mode {p['performance_mode']} differs from brief ({bpm})")
 
     # Mode
     if p["mode"] == "reference_guided":
@@ -369,6 +447,75 @@ def check_production(path: Path, check_ready: bool = False, root: Path = REPO_RO
         if c["dialogue"] and model["supports_spoken_dialogue"] is not True:
             rep.warn(f"clip {cname}: has dialogue, but spoken dialogue for {model['label']} is unverified — plan a voice-over fallback")
 
+    # Performance mode
+    pm = p.get("performance_mode")
+    render_prompts = [("flow clip", c) for c in clips] + [("seedance clip", c) for c in p.get("seedance_prompts", [])]
+    if pm == "fashion_showcase":
+        for s in shots:
+            if s["dialogue"]:
+                rep.error(f"fashion_showcase: shot {s['shot_id']} has dialogue — this mode has no spoken lines")
+        for label, c in render_prompts:
+            if c.get("dialogue"):
+                rep.error(f"fashion_showcase: {label} {c['clip_id']} has dialogue")
+        if p["script"].strip():
+            rep.warn("fashion_showcase: script is not empty; it will not be spoken (use it for captions or on-screen text only)")
+    elif pm == "voiceover_showcase":
+        for label, c in render_prompts:
+            if c.get("dialogue"):
+                rep.error(f"voiceover_showcase: {label} {c['clip_id']} asks the character to speak — narration is a separate audio track")
+    if CLAIM_NEEDED in p["script"].upper() or any(CLAIM_NEEDED in (s["dialogue"] or "").upper() for s in shots):
+        (rep.error if check_ready else rep.warn)("script contains [CLAIM NEEDED] — verify the claim in the brief or remove it")
+
+    # Seedance prompts vs config
+    sd_clips = p.get("seedance_prompts", [])
+    _check_timeline(sd_clips, duration, "seedance clip", rep)
+    sd_ids = [c["clip_id"] for c in sd_clips]
+    if len(sd_ids) != len(set(sd_ids)):
+        rep.error("duplicate seedance clip_id")
+    sd_cfg: Optional[dict] = None
+    if sd_clips:
+        sd_cfg, srep = load_seedance_config(root)
+        rep.errors.extend(srep.errors)
+    sd_models = {m["model_id"]: m for m in sd_cfg["models"]} if sd_cfg else {}
+    for c in sd_clips:
+        cname = c["clip_id"]
+        for img in c["reference_images"] + ([c["first_frame"]] if c.get("first_frame") else []):
+            if img not in asset_paths:
+                rep.error(f"seedance clip {cname}: {img} is not declared in reference_assets")
+            if img.startswith("characters/") and not img.startswith(own_prefix):
+                rep.error(f"seedance clip {cname}: {img} belongs to another character — character mixing is not allowed")
+        if c["generation_mode"] == "image_to_video" and not c.get("first_frame"):
+            rep.error(f"seedance clip {cname}: image_to_video needs first_frame")
+        if c.get("continuity_from") and c["continuity_from"] not in sd_ids:
+            rep.error(f"seedance clip {cname}: continuity_from {c['continuity_from']} does not exist")
+        model = sd_models.get(c["model_id"])
+        if sd_cfg is None:
+            continue
+        if model is None:
+            rep.error(f"seedance clip {cname}: model_id {c['model_id']!r} is not in config/seedance.json")
+            continue
+        if not model["enabled"]:
+            rep.error(f"seedance clip {cname}: model {c['model_id']!r} is disabled")
+        if c["generation_mode"] not in model["generation_modes"]:
+            rep.error(f"seedance clip {cname}: {model['label']} is not configured for {c['generation_mode']}")
+        length = c["end_seconds"] - c["start_seconds"]
+        if length > model["max_clip_seconds"] + TIME_TOLERANCE:
+            rep.error(f"seedance clip {cname}: {length:g}s is longer than {model['label']}'s max_clip_seconds ({model['max_clip_seconds']}s)")
+        if model["clip_durations"] and not any(abs(length - d) <= TIME_TOLERANCE for d in model["clip_durations"]):
+            rep.warn(f"seedance clip {cname}: {length:g}s is not one of the offered lengths {model['clip_durations']} — render the next longer one and trim")
+        n_imgs = len(c["reference_images"]) + (1 if c.get("first_frame") else 0)
+        if model["max_reference_images"] is not None and n_imgs > model["max_reference_images"]:
+            rep.error(f"seedance clip {cname}: {n_imgs} images exceeds the configured limit of {model['max_reference_images']}")
+        if p["aspect_ratio"] not in model["aspect_ratios"]:
+            rep.error(f"seedance clip {cname}: aspect ratio {p['aspect_ratio']} is not configured for {model['label']}")
+
+    # Continuity links
+    all_clip_ids = set(clip_by_id) | set(sd_ids)
+    for link in p.get("continuity", []):
+        for key in ("from_clip", "to_clip"):
+            if link[key] not in all_clip_ids:
+                rep.error(f"continuity {link['from_clip']}->{link['to_clip']}: {link[key]} is not a planned clip")
+
     # Status rules
     status = p["status"]
     qc = p["quality_checks"]
@@ -386,12 +533,15 @@ def check_production(path: Path, check_ready: bool = False, root: Path = REPO_RO
             rep.warn("quality scores are filled in, but nothing has been rendered yet according to status")
 
     if check_ready:
-        if not p["script"].strip():
+        if not p["script"].strip() and pm != "fashion_showcase":
             rep.error("not ready: script is empty")
         if not shots:
             rep.error("not ready: storyboard is empty")
-        if not clips:
+        provider = p.get("video_provider", "google_flow")
+        if provider == "google_flow" and not clips:
             rep.error("not ready: no flow_prompts")
+        if provider == "seedance" and not sd_clips:
+            rep.error("not ready: no seedance_prompts")
         if not qc:
             rep.error("not ready: no quality_checks to evaluate the render against")
         if character is not None and character["status"] != "active":
@@ -504,6 +654,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     sub = parser.add_subparsers(dest="cmd", required=True)
     sub.add_parser("characters", help="validate the character registry")
     sub.add_parser("flow-config", help="validate config/google-flow.json")
+    sub.add_parser("seedance-config", help="validate config/seedance.json")
     for name in ("brief", "manifest", "analysis"):
         sp = sub.add_parser(name)
         sp.add_argument("file", type=Path)
@@ -524,6 +675,9 @@ def main(argv: Optional[List[str]] = None) -> int:
     elif args.cmd == "flow-config":
         _, r = load_flow_config()
         reports.append(("config/google-flow.json", r))
+    elif args.cmd == "seedance-config":
+        _, r = load_seedance_config()
+        reports.append(("config/seedance.json", r))
     elif args.cmd == "brief":
         _, r = check_brief(args.file)
         reports.append((str(args.file), r))
@@ -540,6 +694,8 @@ def main(argv: Optional[List[str]] = None) -> int:
         reports.append(("characters/registry.json", r))
         _, r = load_flow_config()
         reports.append(("config/google-flow.json", r))
+        _, r = load_seedance_config()
+        reports.append(("config/seedance.json", r))
         for f in sorted((REPO_ROOT / "briefs").glob("*/brief.json")):
             _, r = check_brief(f)
             reports.append((str(f.relative_to(REPO_ROOT)), r))

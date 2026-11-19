@@ -1,0 +1,335 @@
+{
+  "id": "acsWfDelivery001",
+  "name": "ACS D · Delivery",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "acs-delivery",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "c0b5e927-9350-501d-8bb6-bb4c7e758c51",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        300
+      ],
+      "webhookId": "2b4c61f2-621d-5296-a1b9-164d5f2108dd",
+      "notes": "Receives the acs.job.v1 contract from the app (ids only, no paths or secrets)."
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.ACS_APP_URL }}/api/orchestrator/jobs/{{ $('Webhook').first().json.body.job_id }}/validate",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-acs-token",
+              "value": "={{ $env.ACS_ORCHESTRATOR_TOKEN }}"
+            },
+            {
+              "name": "x-acs-execution-id",
+              "value": "={{ $execution.id }}"
+            },
+            {
+              "name": "x-acs-run-key",
+              "value": "={{ $('Webhook').first().json.body.idempotency_key }}"
+            },
+            {
+              "name": "x-acs-idempotency-key",
+              "value": "={{ $execution.id }}:validate"
+            },
+            {
+              "name": "x-acs-inbound-token",
+              "value": "={{ $('Webhook').first().json.headers['x-acs-token'] || '' }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($('Webhook').first().json.body) }}",
+        "options": {
+          "timeout": 300000
+        }
+      },
+      "id": "6f5d491c-f3b0-535f-8978-e31260852212",
+      "name": "Validate approved job",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        250,
+        300
+      ],
+      "notes": "POST /validate (no retries here: failures go to the error workflow; the app offers a bounded retry)"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.ACS_APP_URL }}/api/orchestrator/jobs/{{ $('Webhook').first().json.body.job_id }}/package",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-acs-token",
+              "value": "={{ $env.ACS_ORCHESTRATOR_TOKEN }}"
+            },
+            {
+              "name": "x-acs-execution-id",
+              "value": "={{ $execution.id }}"
+            },
+            {
+              "name": "x-acs-run-key",
+              "value": "={{ $('Webhook').first().json.body.idempotency_key }}"
+            },
+            {
+              "name": "x-acs-idempotency-key",
+              "value": "={{ $execution.id }}:package"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{}",
+        "options": {
+          "timeout": 300000
+        }
+      },
+      "id": "35decba3-8300-56eb-ad7b-22d702770c4c",
+      "name": "Package assets",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        500,
+        300
+      ],
+      "notes": "POST /package (no retries here: failures go to the error workflow; the app offers a bounded retry)"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.ACS_APP_URL }}/api/orchestrator/jobs/{{ $('Webhook').first().json.body.job_id }}/delivery-manifest",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-acs-token",
+              "value": "={{ $env.ACS_ORCHESTRATOR_TOKEN }}"
+            },
+            {
+              "name": "x-acs-execution-id",
+              "value": "={{ $execution.id }}"
+            },
+            {
+              "name": "x-acs-run-key",
+              "value": "={{ $('Webhook').first().json.body.idempotency_key }}"
+            },
+            {
+              "name": "x-acs-idempotency-key",
+              "value": "={{ $execution.id }}:manifest"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{}",
+        "options": {
+          "timeout": 300000
+        }
+      },
+      "id": "01b05e0a-8615-5901-8f2a-fdace0cdf71e",
+      "name": "Generate delivery manifest",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        750,
+        300
+      ],
+      "notes": "POST /delivery-manifest (no retries here: failures go to the error workflow; the app offers a bounded retry)"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.ACS_APP_URL }}/api/orchestrator/jobs/{{ $('Webhook').first().json.body.job_id }}/delivered",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-acs-token",
+              "value": "={{ $env.ACS_ORCHESTRATOR_TOKEN }}"
+            },
+            {
+              "name": "x-acs-execution-id",
+              "value": "={{ $execution.id }}"
+            },
+            {
+              "name": "x-acs-run-key",
+              "value": "={{ $('Webhook').first().json.body.idempotency_key }}"
+            },
+            {
+              "name": "x-acs-idempotency-key",
+              "value": "={{ $execution.id }}:delivered"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{}",
+        "options": {
+          "timeout": 300000
+        }
+      },
+      "id": "4b077255-258d-58b0-b17b-68883a5bd734",
+      "name": "Mark delivered",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1000,
+        300
+      ],
+      "notes": "POST /delivered (no retries here: failures go to the error workflow; the app offers a bounded retry)"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.ACS_APP_URL }}/api/orchestrator/jobs/{{ $('Webhook').first().json.body.job_id }}/approval-pending",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-acs-token",
+              "value": "={{ $env.ACS_ORCHESTRATOR_TOKEN }}"
+            },
+            {
+              "name": "x-acs-execution-id",
+              "value": "={{ $execution.id }}"
+            },
+            {
+              "name": "x-acs-run-key",
+              "value": "={{ $('Webhook').first().json.body.idempotency_key }}"
+            },
+            {
+              "name": "x-acs-idempotency-key",
+              "value": "={{ $execution.id }}:pending"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{}",
+        "options": {
+          "timeout": 300000
+        }
+      },
+      "id": "8a3a4ee9-de37-5393-a3f2-aa592f368ad9",
+      "name": "Approval pending",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1250,
+        300
+      ],
+      "notes": "POST /approval-pending (no retries here: failures go to the error workflow; the app offers a bounded retry)"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ execution_id: $execution.id, workflow: $workflow.name, job_id: $('Webhook').first().json.body.job_id, state: $('Approval pending').first().json.state, label: $('Approval pending').first().json.label || null, waiting_for_human: $('Approval pending').first().json.waiting_for_human || false }) }}",
+        "options": {}
+      },
+      "id": "76ae756d-43d5-5763-8b7b-b090f46e60a5",
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1500,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Validate approved job",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate approved job": {
+      "main": [
+        [
+          {
+            "node": "Package assets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Package assets": {
+      "main": [
+        [
+          {
+            "node": "Generate delivery manifest",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate delivery manifest": {
+      "main": [
+        [
+          {
+            "node": "Mark delivered",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark delivered": {
+      "main": [
+        [
+          {
+            "node": "Approval pending",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Approval pending": {
+      "main": [
+        [
+          {
+            "node": "Respond",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "errorWorkflow": "acsWfErrors00001",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "saveManualExecutions": true
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "acs_contract": "acs.job.v1"
+  },
+  "tags": []
+}

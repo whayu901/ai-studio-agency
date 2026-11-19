@@ -1,0 +1,229 @@
+{
+  "id": "acsWfReview00001",
+  "name": "ACS C · Production Review",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "acs-production-review",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "412e34cf-7554-5d2d-b1d1-49c8af6450ea",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        300
+      ],
+      "webhookId": "99d88f19-0e36-585c-a0ad-517b00e74e89",
+      "notes": "Receives the acs.job.v1 contract from the app (ids only, no paths or secrets)."
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.ACS_APP_URL }}/api/orchestrator/jobs/{{ $('Webhook').first().json.body.job_id }}/validate",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-acs-token",
+              "value": "={{ $env.ACS_ORCHESTRATOR_TOKEN }}"
+            },
+            {
+              "name": "x-acs-execution-id",
+              "value": "={{ $execution.id }}"
+            },
+            {
+              "name": "x-acs-run-key",
+              "value": "={{ $('Webhook').first().json.body.idempotency_key }}"
+            },
+            {
+              "name": "x-acs-idempotency-key",
+              "value": "={{ $execution.id }}:validate"
+            },
+            {
+              "name": "x-acs-inbound-token",
+              "value": "={{ $('Webhook').first().json.headers['x-acs-token'] || '' }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($('Webhook').first().json.body) }}",
+        "options": {
+          "timeout": 300000
+        }
+      },
+      "id": "ed6c3cf3-3da5-50aa-87d8-f8b30213269c",
+      "name": "Receive render metadata",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        250,
+        300
+      ],
+      "notes": "POST /validate (no retries here: failures go to the error workflow; the app offers a bounded retry)"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.ACS_APP_URL }}/api/orchestrator/jobs/{{ $('Webhook').first().json.body.job_id }}/renders/attach",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-acs-token",
+              "value": "={{ $env.ACS_ORCHESTRATOR_TOKEN }}"
+            },
+            {
+              "name": "x-acs-execution-id",
+              "value": "={{ $execution.id }}"
+            },
+            {
+              "name": "x-acs-run-key",
+              "value": "={{ $('Webhook').first().json.body.idempotency_key }}"
+            },
+            {
+              "name": "x-acs-idempotency-key",
+              "value": "={{ $execution.id }}:attach"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ render_ids: $('Webhook').first().json.body.render_ids }) }}",
+        "options": {
+          "timeout": 300000
+        }
+      },
+      "id": "99f27a29-a311-5103-85a3-4cecb6148a45",
+      "name": "Attach generated video",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        500,
+        300
+      ],
+      "notes": "POST /renders/attach (no retries here: failures go to the error workflow; the app offers a bounded retry)"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.ACS_APP_URL }}/api/orchestrator/jobs/{{ $('Webhook').first().json.body.job_id }}/approval-pending",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-acs-token",
+              "value": "={{ $env.ACS_ORCHESTRATOR_TOKEN }}"
+            },
+            {
+              "name": "x-acs-execution-id",
+              "value": "={{ $execution.id }}"
+            },
+            {
+              "name": "x-acs-run-key",
+              "value": "={{ $('Webhook').first().json.body.idempotency_key }}"
+            },
+            {
+              "name": "x-acs-idempotency-key",
+              "value": "={{ $execution.id }}:pending"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{}",
+        "options": {
+          "timeout": 300000
+        }
+      },
+      "id": "0fad5548-bd8a-5aa6-acdb-22282e83a095",
+      "name": "Quality review pending",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        750,
+        300
+      ],
+      "notes": "POST /approval-pending (no retries here: failures go to the error workflow; the app offers a bounded retry)"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ execution_id: $execution.id, workflow: $workflow.name, job_id: $('Webhook').first().json.body.job_id, state: $('Quality review pending').first().json.state, label: $('Quality review pending').first().json.label || null, waiting_for_human: $('Quality review pending').first().json.waiting_for_human || false }) }}",
+        "options": {}
+      },
+      "id": "36792de0-77d9-5a85-8327-5bdb20cc306f",
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1000,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Receive render metadata",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Receive render metadata": {
+      "main": [
+        [
+          {
+            "node": "Attach generated video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Attach generated video": {
+      "main": [
+        [
+          {
+            "node": "Quality review pending",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Quality review pending": {
+      "main": [
+        [
+          {
+            "node": "Respond",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "errorWorkflow": "acsWfErrors00001",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "saveManualExecutions": true
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "acs_contract": "acs.job.v1"
+  },
+  "tags": []
+}

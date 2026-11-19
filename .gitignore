@@ -41,6 +41,7 @@ experiments/*.csv
 # Secrets — never commit these
 .env
 .env.*
+!.env.example
 *.key
 *.pem
 secrets/
@@ -53,3 +54,13 @@ __pycache__/
 .venv/
 venv/
 .DS_Store
+
+# Web app (dashboard + API): dependencies, build output, local state
+web/node_modules/
+web/.next/
+web/next-env.d.ts
+web/*.tsbuildinfo
+data/
+
+# n8n local runtime (credentials, encryption key and state live in the Docker volume / .env)
+n8n/.env

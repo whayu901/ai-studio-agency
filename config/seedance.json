@@ -1,0 +1,31 @@
+{
+  "schema_version": "1.0",
+  "verified_by_user_on": null,
+  "notes": [
+    "This file describes what YOUR Seedance / Dreamina account can do in its web UI. Nothing here is checked automatically and there is no API integration.",
+    "Values are unverified starter values. Open Dreamina, check the model list, clip lengths, reference-image limit and aspect ratios, then edit this file and set verified: true.",
+    "null means unknown; prompts treat it as 'do not rely on this'."
+  ],
+  "default_model_id": "seedance-web",
+  "models": [
+    {
+      "model_id": "seedance-web",
+      "label": "Seedance (Dreamina web UI)",
+      "enabled": true,
+      "verified": false,
+      "generation_modes": ["image_to_video", "text_to_video"],
+      "max_clip_seconds": 10,
+      "clip_durations": [5, 10],
+      "max_reference_images": 1,
+      "aspect_ratios": ["9:16", "16:9", "1:1"],
+      "generates_audio": null,
+      "supports_spoken_dialogue": null,
+      "notes": "Unverified. Image-to-video from one first-frame image is the assumed main mode. If your plan offers multi-reference generation, add reference_to_video and raise max_reference_images."
+    }
+  ],
+  "generation_modes": {
+    "image_to_video": "First-frame image + motion prompt. The first frame carries the character's identity, so make it from the character's own references.",
+    "reference_to_video": "Several reference images + prompt (only if your plan shows it).",
+    "text_to_video": "Prompt only. No identity control; B-roll without the character only."
+  }
+}
