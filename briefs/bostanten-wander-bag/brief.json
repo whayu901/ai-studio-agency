@@ -1,0 +1,97 @@
+{
+  "schema_version": "1.0",
+  "brief_id": "bostanten-wander-bag",
+  "is_sample": false,
+  "brand": {
+    "name": "BOSTANTEN",
+    "guidelines": [
+      "Shopee affiliate promotion: disclose the affiliate link (e.g. #ad / link affiliate) wherever the platform requires it",
+      "Material is PU leather: always say 'kulit PU' or just 'tas', never 'kulit asli' or 'genuine leather'",
+      "Casual, honest creator tone; show the bag in real everyday use, no exaggeration",
+      "Only claims from verified_claims; everything else is [CLAIM NEEDED]"
+    ],
+    "colors": ["Elephant Grey"]
+  },
+  "product": {
+    "name": "BOSTANTEN Wander Bag — Tas Selempang Mini 3 Cara Pakai",
+    "category": "Fashion bag (mini shoulder / crossbody bag)",
+    "description": "Compact PU-leather mini bag that can be carried three ways: by the hand strap, on the shoulder, or crossbody.",
+    "variants": ["Elephant Grey", "Apricot", "Off White", "Black", "Pink"],
+    "key_features": [
+      "3 ways to carry: hand strap, side (shoulder), crossbody",
+      "Compact size: 21 x 15 x 8 cm",
+      "Light: 0.23 kg",
+      "Detachable-style back strap, 150 cm",
+      "Zip closure with tassel pull; 1 zip compartment and 1 inner pocket (per listing)"
+    ],
+    "visual_identity": [
+      "Rounded, slightly crescent-shaped body that widens towards a flat base",
+      "Pebbled-grain finish in grey-brown (assumed to be the 'Elephant Grey' variant — confirm against the listing)",
+      "One-piece rounded top handle forming an oval opening",
+      "Small silver 'B' logo plate centred near the bottom of the front panel",
+      "Top zip with a long matching tassel pull on the left",
+      "Metal ring on each side where the long strap attaches"
+    ],
+    "price": null,
+    "where_to_buy": "Shopee (affiliate link in bio)"
+  },
+  "product_images": ["assets/products/tas-selempang.png"],
+  "verified_claims": [
+    { "claim": "Bisa dipakai 3 cara: tali tangan, samping (bahu), dan silang", "source": "Shopee listing title '[Wander Bag] BOSTANTEN Tas Selempang Mini 3 Cara Pakai (Tali Tangan, Samping, Silang)', copied 2026-11-19" },
+    { "claim": "Bahan kulit PU", "source": "Shopee listing description: 'Bahan: Kulit PU', copied 2026-11-19" },
+    { "claim": "Ukuran 21 cm (lebar) x 15 cm (tinggi) x 8 cm (tebal)", "source": "Shopee listing description: 'Dimensi', copied 2026-11-19" },
+    { "claim": "Berat 0,23 kg", "source": "Shopee listing description: 'Berat', copied 2026-11-19" },
+    { "claim": "Tinggi pegangan tangan 11 cm", "source": "Shopee listing description: 'Pegangan tas dengan jarak sedang (CM): 11', copied 2026-11-19" },
+    { "claim": "Tali panjang 150 cm", "source": "Shopee listing description: 'Tali belakang (CM): 150', copied 2026-11-19" },
+    { "claim": "Tersedia warna Elephant Grey, Apricot, Off White, Hitam, dan Pink", "source": "Shopee listing description: 'Warna', copied 2026-11-19" },
+    { "claim": "Cocok untuk sekolah, kantor, jalan-jalan, belanja, makan, kencan, dan acara seperti pesta atau konser", "source": "Shopee listing description: 'Tempat yang berlaku', copied 2026-11-19" }
+  ],
+  "prohibited_claims": [
+    "Kulit asli / genuine leather / real leather",
+    "Waterproof, anti air, anti gores, or any durability or lifetime claim (not in the listing)",
+    "Capacity claims such as 'muat HP besar', 'muat botol', or a specific list of items (not in the listing; [CLAIM NEEDED])",
+    "'100% asli' / authenticity guarantees as a spoken claim (seller statement, not independently verified)",
+    "Prices, discounts, 'gratis ongkir' or limited-stock urgency (change often; not provided)",
+    "'Paling murah', 'terbaik', 'nomor satu' or comparisons with other brands",
+    "Saying it is a luxury or designer-brand bag"
+  ],
+  "target_audience": {
+    "description": "Women — students, teens and office workers — looking for a compact, versatile everyday bag for school, work, hangouts and events",
+    "age_range": "17-30",
+    "locale": "ID",
+    "language": "id",
+    "pain_points": [
+      "One bag rarely suits both work and going out",
+      "Big bags feel heavy for short trips"
+    ]
+  },
+  "campaign": {
+    "objective": "Click-through to the Shopee affiliate link",
+    "concept_direction": "Natural creator moment showing the same bag carried three ways, filmed on a phone",
+    "tone": ["casual", "honest", "playful"],
+    "cta": "Cek link di bio",
+    "platforms": ["TikTok", "Instagram Reels", "Shopee Video"]
+  },
+  "deliverable": {
+    "duration_seconds": 8,
+    "aspect_ratio": "9:16",
+    "visual_style": "Natural smartphone video, daylight, realistic, lightly handheld",
+    "preferred_character_id": "female_02"
+  },
+  "script": {
+    "mode": "ai_generated",
+    "custom_script": null,
+    "language": "id"
+  },
+  "mandatory_elements": [
+    "Bag clearly visible within the first 2 seconds",
+    "Show at least two of the three carry styles",
+    "Spoken or on-screen CTA in the last 2 seconds",
+    "Affiliate disclosure added in editing or in the caption"
+  ],
+  "restrictions": [
+    "Only this BOSTANTEN bag: no other bags in frame (do not use female_02's reference.jpeg, which shows a cream bag)",
+    "No other brand logos visible",
+    "No on-screen prices"
+  ]
+}

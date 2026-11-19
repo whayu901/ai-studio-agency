@@ -2,7 +2,7 @@
   "schema_version": "1.0",
   "character_id": "female_02",
   "display_name": "Female 02",
-  "status": "placeholder",
+  "status": "active",
   "physical_description": "Adult woman with long, straight black hair, centre-parted with wispy face-framing bangs; dark brown eyes; light warm skin tone; full lips; pearl stud earrings; black cat-eye sunglasses usually resting on top of her head; beaded bracelets on both wrists; a floral band tattoo around the right thigh just above the knee.",
   "references": {
     "front": [
@@ -64,12 +64,15 @@
     "clone_authorization_reference": null
   },
   "commercial_use": {
-    "authorized": false,
-    "rights_holder": null,
-    "license_reference": null,
-    "authorized_uses": [],
+    "authorized": true,
+    "rights_holder": "Repository owner (created this character)",
+    "license_reference": "Self-generated with Google Nano Banana (Gemini image model); use is subject to Google's generative AI terms",
+    "authorized_uses": [
+      "Short-form social video ads",
+      "Shopee affiliate product promotion"
+    ],
     "expires_on": null,
-    "notes": "Fill in before status can become 'active'. Record who owns this character's likeness and what uses are licensed."
+    "notes": "Recorded on 2026-11-19 from the owner's statement that they generated this face and character themselves. AI-generated likeness: apply the platform's AI-content label, and do not use it if it turns out to resemble a real person."
   },
-  "notes": "physical_description approved by the user on 2026-11-19 from the reference images. Do not use references/reference.jpeg as an ingredient in bag ads: it shows a different (cream) bag. full-body2.jpg shows an alternate outfit (taupe skirt, white socks, grey sneakers); do not mix outfits within one production. Still PLACEHOLDER until commercial_use is completed by the user."
+  "notes": "physical_description approved by the user on 2026-11-19 from the reference images. Do not use references/reference.jpeg as an ingredient in bag ads: it shows a different (cream) bag. full-body2.jpg shows an alternate outfit (taupe skirt, white socks, grey sneakers); do not mix outfits within one production."
 }

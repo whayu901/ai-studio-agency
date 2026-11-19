@@ -50,8 +50,9 @@ class RealRepoTest(unittest.TestCase):
     def test_expected_production_not_ready_without_images(self):
         rep = validate.check_production(REPO_ROOT / PROD, check_ready=True, root=REPO_ROOT)
         text = errors_text(rep)
-        self.assertIn("status 'placeholder'", text)
-        self.assertIn("missing on disk", text)
+        # The demo product photo is fictional and never committed, so the demo can't be "ready"
+        # however the user has filled in the real characters.
+        self.assertIn("assets/products/arka-tumbler-front.jpg is missing on disk", text)
 
 
 class TempRepoCase(unittest.TestCase):

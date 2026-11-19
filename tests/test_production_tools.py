@@ -127,7 +127,7 @@ class RenderSheetTest(ReadyRepoCase):
         self.assertEqual(code, 0)
         text = out.read_text()
         self.assertIn("NOT READY TO RENDER", text)
-        self.assertIn("status 'placeholder'", text)
+        self.assertIn("arka-tumbler-front.jpg is missing on disk", text)
 
     def test_ready_sheet_contents(self):
         code, stdout, _ = quiet(render_sheet.make_sheet, self.prod_path, None, False, self.root)
