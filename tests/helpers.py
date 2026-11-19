@@ -91,3 +91,26 @@ def image_size(image: Path):
     ).stdout.strip()
     w, h = out.split(",")[:2]
     return int(w), int(h)
+
+
+def frame_at(video: Path, seconds: float, out: Path) -> Path:
+    """Grab one frame as PNG."""
+    subprocess.run([FFMPEG, "-hide_banner", "-loglevel", "error", "-ss", f"{seconds}", "-i", str(video), "-frames:v", "1",
+                    "-update", "1", "-y", str(out)], check=True, capture_output=True)
+    return out
+
+
+def region_rgb(image: Path, x: int, y: int, w: int, h: int):
+    """Average colour of a rectangle of an image as (r, g, b)."""
+    out = subprocess.run(
+        [FFMPEG, "-hide_banner", "-loglevel", "error", "-i", str(image), "-vf", f"crop={w}:{h}:{x}:{y},scale=1:1",
+         "-f", "rawvideo", "-pix_fmt", "rgb24", "-"],
+        check=True, capture_output=True,
+    ).stdout
+    return tuple(out[:3])
+
+
+def make_tone(path: Path, seconds: float, freq: int = 880) -> Path:
+    subprocess.run([FFMPEG, "-hide_banner", "-loglevel", "error", "-f", "lavfi", "-i", f"sine=frequency={freq}:duration={seconds}",
+                    "-y", str(path)], check=True, capture_output=True)
+    return path

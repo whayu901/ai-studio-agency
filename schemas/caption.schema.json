@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "caption.schema.json",
+  "title": "Post captions for one production",
+  "description": "Written by prompts/caption.md to outputs/<job>/caption.json. Posted by a human; nothing is published automatically.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "job_id", "prompt_version", "language", "ai_disclosure", "claims_used", "captions"],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "job_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{1,63}$" },
+    "prompt_version": { "type": "string", "pattern": "^caption@\\d+\\.\\d+\\.\\d+$" },
+    "language": { "type": "string", "minLength": 2 },
+    "ai_disclosure": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Plain statement that the video is AI-generated, appended to every caption."
+    },
+    "claims_used": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "description": "Every product claim the captions make, copied exactly from the brief's verified_claims."
+    },
+    "captions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["platform", "text", "hashtags", "disclosure"],
+        "properties": {
+          "platform": { "type": "string", "minLength": 1 },
+          "text": { "type": "string", "minLength": 1, "maxLength": 2200 },
+          "hashtags": {
+            "type": "array",
+            "maxItems": 10,
+            "items": { "type": "string", "pattern": "^#[^\\s#]+$" }
+          },
+          "disclosure": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Paid / affiliate disclosure, e.g. '#ad · link affiliate'."
+          }
+        }
+      }
+    }
+  }
+}

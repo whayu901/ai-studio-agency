@@ -235,21 +235,62 @@ The analysis prompt makes Claude label every observation as *observed*, *inferre
 *unknown* for this reason. The goal is to learn the structure (pacing, framing, beat order) and
 make something **original**, never a copy.
 
-## 8. After rendering
+## 8. After rendering: review, log, edit, approve, deliver
 
-- Score each clip with [docs/quality-control-checklist.md](docs/quality-control-checklist.md).
-- Log **every** attempt, including failed ones. The log file is created on first use:
+Everything here runs locally with FFmpeg. Nothing is uploaded or posted.
 
-  ```bash
-  python3 tools/log_attempt.py outputs/my-job/production.json --clip C01 --credits 20 --scores QC01=4,QC02=4,QC03=3,QC04=2,QC05=5,QC06=4,QC07=3,QC08=3,QC09=4,QC10=1 --problems "6 fingers at 2.4 s" --decision RETRY --output-file outputs/my-job/renders/C01_a01.mp4
-  ```
+1. **Check each download.** Measures length, aspect ratio and audio, and makes a contact sheet
+   (frames every 0.5 s with timestamps) plus the last frame for continuing clips:
 
-  For the take you keep, use `--decision SELECTED --update-production`. That copies the scores
-  into `production.json` and sets the status to `RENDERED_PENDING_QC`. The tool numbers
-  experiments and attempts for you and prints which checks failed.
+   ```bash
+   python3 tools/review_render.py outputs/my-job/production.json --clip C01 --file outputs/my-job/renders/C01_a01.mp4
+   ```
 
-- A human reviewer must approve before anything is delivered commercially. Set `status:
-  "APPROVED"` with your name and date in `human_review` by hand. No tool does that for you.
+2. **Score and log every attempt**, including failed ones (see
+   [docs/quality-control-checklist.md](docs/quality-control-checklist.md)). The log file is created on first use:
+
+   ```bash
+   python3 tools/log_attempt.py outputs/my-job/production.json --clip C01 --credits 20 --scores QC01=4,QC02=4,QC03=3,QC04=2,QC05=5,QC06=4,QC07=3,QC08=3,QC09=4,QC10=1 --problems "6 fingers at 2.4 s" --decision RETRY --output-file outputs/my-job/renders/C01_a01.mp4
+   ```
+
+   For the take you keep, use `--decision SELECTED --update-production`. That copies the scores
+   into `production.json` and sets the status to `RENDERED_PENDING_QC`.
+
+3. **Assemble the edit.** Takes come from the log (latest `SELECTED` per clip) or `--take`. Each
+   clip is fitted to 1080×1920 (for 9:16), trimmed or held to its planned length, joined in
+   order, the storyboard's on-screen text is drawn at the shot times, a small AI-content label
+   is added, and audio is normalised to -14 LUFS:
+
+   ```bash
+   python3 tools/assemble.py outputs/my-job/production.json
+   # with your own voice-over (clip audio ducked underneath):
+   python3 tools/assemble.py outputs/my-job/production.json --voiceover outputs/my-job/audio/vo.wav --voiceover-rights own_recording
+   ```
+
+   Output: `outputs/my-job/edit/my-job_v01.mp4` plus `my-job_v01.json` (which takes, texts and
+   audio went in). Voice-overs must be your own recording or a licensed voice; never a clone of
+   a real person.
+
+4. **Write captions** with `prompts/caption.md` → `outputs/my-job/caption.json`, then
+   `python3 tools/validate.py caption outputs/my-job/caption.json`. Claims must come from the
+   brief, and every caption carries the paid/affiliate disclosure and an AI note.
+
+5. **Approve (a person, in a terminal).** Refuses unless every QC check passes, all rights are
+   real, the brief isn't sample data and the character is active. You type the job id to confirm.
+   It only runs in an interactive terminal, so no script or AI assistant can approve for you:
+
+   ```bash
+   python3 tools/approve.py outputs/my-job/production.json --reviewer "Your Name"
+   ```
+
+6. **Package the delivery.** Copies the approved edit, writes one caption file per platform and
+   a `DELIVERY.md` with checksums, scores and a posting checklist:
+
+   ```bash
+   python3 tools/package_delivery.py outputs/my-job/production.json --video outputs/my-job/edit/my-job_v01.mp4 --caption outputs/my-job/caption.json
+   ```
+
+   Then post by hand, and switch on the platform's own AI-content label.
 
 ## 9. Safety and rights rules
 
@@ -276,6 +317,7 @@ has a column for them, so you can tell which prompt changes improved results.
 | `storyboard.md` | 0.1.0 | Timestamped shots and clips |
 | `character-consistency.md` | 0.1.0 | Identity plan and drift diagnosis |
 | `google-flow.md` | 0.2.0 | Flow prompts per clip |
+| `caption.md` | 0.1.0 | Post captions with disclosure |
 
 ## 11. Tools
 
@@ -283,9 +325,13 @@ has a column for them, so you can tell which prompt changes improved results.
 |---|---|
 | `tools/extract_frames.py` | Timestamped frames + manifest from an authorized MP4/MOV |
 | `tools/generate_manifest.py` | Rebuild a manifest for frames that already exist |
-| `tools/validate.py` | Validate characters, briefs, productions, manifests and analyses (`--check-ready` for render readiness) |
+| `tools/validate.py` | Validate characters, briefs, productions, captions, manifests and analyses (`--check-ready` for render readiness) |
 | `tools/new_production.py` | Create an empty DRAFT production for a job |
 | `tools/render_sheet.py` | Production → copy/paste render sheet for Flow |
 | `tools/log_attempt.py` | Log a render attempt and its QC scores to the experiment CSV |
+| `tools/review_render.py` | Check a downloaded clip; contact sheet, last frame, review notes |
+| `tools/assemble.py` | Kept takes → edited video with on-screen text, AI label, voice-over, loudness |
+| `tools/approve.py` | Human-only sign-off (interactive terminal) that sets `APPROVED` |
+| `tools/package_delivery.py` | Approved edit + captions → `outputs/<job>/delivery/` |
 
 Every tool has `--help`.

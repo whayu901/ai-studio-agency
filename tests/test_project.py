@@ -26,6 +26,13 @@ REQUIRED = [
     "tools/new_production.py",
     "tools/render_sheet.py",
     "tools/log_attempt.py",
+    "tools/postprod.py",
+    "tools/review_render.py",
+    "tools/assemble.py",
+    "tools/approve.py",
+    "tools/package_delivery.py",
+    "prompts/caption.md",
+    "schemas/caption.schema.json",
     "prompts/creative-director.md",
     "prompts/scriptwriter.md",
     "prompts/storyboard.md",
@@ -37,7 +44,7 @@ REQUIRED = [
     "docs/quality-control-checklist.md",
     "experiments/experiment-log-template.csv",
 ]
-ACTIVE_PROMPTS = ["original-creation", "reference-analysis", "google-flow", "creative-director", "scriptwriter", "storyboard", "character-consistency"]
+ACTIVE_PROMPTS = ["original-creation", "reference-analysis", "google-flow", "creative-director", "scriptwriter", "storyboard", "character-consistency", "caption"]
 
 
 class StructureTest(unittest.TestCase):

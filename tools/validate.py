@@ -5,6 +5,7 @@ Examples (run from the repo root):
     python3 tools/validate.py characters
     python3 tools/validate.py brief briefs/demo-001/brief.json
     python3 tools/validate.py production briefs/demo-001/expected-production.json --check-ready
+    python3 tools/validate.py caption outputs/<job>/caption.json
     python3 tools/validate.py manifest outputs/analysis/my-ref/manifest.json
     python3 tools/validate.py analysis outputs/analysis/my-ref/analysis.json
     python3 tools/validate.py all
@@ -452,6 +453,49 @@ def check_analysis(path: Path, root: Path = REPO_ROOT) -> Report:
     return rep
 
 
+# --------------------------------------------------------------------------- caption
+
+
+def check_caption(path: Path, production_path: Optional[Path] = None, root: Path = REPO_ROOT) -> Report:
+    """Captions: schema, claims only from the brief, disclosure present, no unresolved claims."""
+    rep = Report()
+    c = load_json(path)
+    rep.extend(schema_check(c, "caption.schema.json", str(path), root))
+    if not rep.ok:
+        return rep
+    cap: dict = c  # type: ignore[assignment]
+    prod_path = production_path or path.parent / "production.json"
+    if not prod_path.exists():
+        rep.error(f"production {prod_path} not found (needed to check claims)")
+        return rep
+    prod = load_json(prod_path)
+    if prod["job_id"] != cap["job_id"]:  # type: ignore[index]
+        rep.error(f"caption job_id {cap['job_id']!r} does not match production {prod['job_id']!r}")  # type: ignore[index]
+    brief_path = root / prod["brief"]  # type: ignore[index]
+    if not brief_path.exists():
+        rep.error(f"brief {prod['brief']} not found")  # type: ignore[index]
+        return rep
+    brief = load_json(brief_path)
+    verified = {v["claim"] for v in brief["verified_claims"]}  # type: ignore[index]
+    for claim in cap["claims_used"]:
+        if claim not in verified:
+            rep.error(f"claims_used contains {claim!r}, which is not a verified claim in the brief")
+    seen = set()
+    for item in cap["captions"]:
+        plat = item["platform"]
+        if plat in seen:
+            rep.error(f"two captions for platform {plat!r}")
+        seen.add(plat)
+        if "[CLAIM NEEDED" in item["text"].upper():
+            rep.error(f"{plat}: caption still contains [CLAIM NEEDED] — verify the claim or remove it")
+        if not item["disclosure"].strip():
+            rep.error(f"{plat}: disclosure is empty")
+    for plat in brief["campaign"]["platforms"]:  # type: ignore[index]
+        if plat not in seen:
+            rep.warn(f"no caption for {plat}, which the brief lists as a platform")
+    return rep
+
+
 # --------------------------------------------------------------------------- CLI
 
 
@@ -466,6 +510,9 @@ def main(argv: Optional[List[str]] = None) -> int:
     sp = sub.add_parser("production")
     sp.add_argument("file", type=Path)
     sp.add_argument("--check-ready", action="store_true", help="also require everything needed to render now")
+    sp = sub.add_parser("caption")
+    sp.add_argument("file", type=Path)
+    sp.add_argument("--production", type=Path, default=None, help="default: production.json next to the caption")
     sub.add_parser("all", help="validate characters, flow config and every briefs/*/ file")
     args = parser.parse_args(argv)
 
@@ -482,6 +529,8 @@ def main(argv: Optional[List[str]] = None) -> int:
         reports.append((str(args.file), r))
     elif args.cmd == "production":
         reports.append((str(args.file) + (" (render readiness)" if args.check_ready else ""), check_production(args.file, args.check_ready)))
+    elif args.cmd == "caption":
+        reports.append((str(args.file), check_caption(args.file, args.production)))
     elif args.cmd == "manifest":
         reports.append((str(args.file), check_manifest(args.file)))
     elif args.cmd == "analysis":

@@ -23,7 +23,9 @@ calls a paid API.
    unknown.
 6. **No voice cloning** of real speakers. **No auto-publishing.** Human review before any
    commercial delivery.
-7. Do not commit media, secrets, or anything in `outputs/`. Do not install system software
+7. **Never run `tools/approve.py`** or set `status: APPROVED` by any other route (editing JSON,
+   calling `approve()` from Python). Approval is a person's decision, made in their own terminal.
+8. Do not commit media, secrets, or anything in `outputs/`. Do not install system software
    without asking.
 
 ## Layout
@@ -56,6 +58,10 @@ calls a paid API.
   sheet.
 - Log a render the user did: `python3 tools/log_attempt.py outputs/<job>/production.json --clip C01 ...`
   Use the scores and credits the **user** reports. Never invent them. Never set `APPROVED` yourself.
+- After rendering (Phase 3, all local): `tools/review_render.py` (contact sheet + checks) →
+  `tools/log_attempt.py` → `tools/assemble.py` (edit with on-screen text, AI label, optional
+  voice-over with `--voiceover-rights`) → `prompts/caption.md` + `validate.py caption` →
+  the **user** runs `tools/approve.py` → `tools/package_delivery.py`. Never upload or post.
 - Tests: `python3 -m unittest discover -s tests -v`
 
 ## Conventions
