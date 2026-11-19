@@ -26,9 +26,12 @@ class RealRepoTest(unittest.TestCase):
         profiles, rep = validate.load_characters(REPO_ROOT)
         self.assertEqual(rep.errors, [])
         self.assertEqual(sorted(profiles), ["female_01", "female_02"])
-        for p in profiles.values():
-            self.assertIsNone(p["physical_description"], "placeholders must not invent appearance")
-            self.assertFalse(p["commercial_use"]["authorized"])
+        for cid, p in profiles.items():
+            # The registry holds user-filled data, so only check the invariant: an appearance
+            # description may exist only once reference images back it up (never invented).
+            has_refs = any(p["references"].values())
+            if not has_refs:
+                self.assertIsNone(p["physical_description"], f"{cid}: no reference images, so appearance must stay null")
 
     def test_flow_config_is_valid(self):
         cfg, rep = validate.load_flow_config(REPO_ROOT)

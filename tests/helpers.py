@@ -39,7 +39,13 @@ def make_temp_repo() -> Path:
     for prof in (REPO_ROOT / "characters").glob("*/character.json"):
         dest = root / "characters" / prof.parent.name
         (dest / "references").mkdir(parents=True)
-        shutil.copy(prof, dest / "character.json")
+        # Private reference images are not copied, so start every test profile from a
+        # clean placeholder state regardless of what the real repo has filled in.
+        data = json.loads(prof.read_text(encoding="utf-8"))
+        data["references"] = {view: [] for view in data["references"]}
+        data["status"] = "placeholder"
+        data["physical_description"] = None
+        write_json(dest / "character.json", data)
     (root / "assets" / "products").mkdir(parents=True)
     return root
 

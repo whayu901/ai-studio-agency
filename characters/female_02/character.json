@@ -3,20 +3,38 @@
   "character_id": "female_02",
   "display_name": "Female 02",
   "status": "placeholder",
-  "physical_description": null,
+  "physical_description": "Adult woman with long, straight black hair, centre-parted with wispy face-framing bangs; dark brown eyes; light warm skin tone; full lips; pearl stud earrings; black cat-eye sunglasses usually resting on top of her head; beaded bracelets on both wrists; a floral band tattoo around the right thigh just above the knee.",
   "references": {
-    "front": [],
-    "side": [],
+    "front": [
+      "characters/female_02/references/full-body.jpeg"
+    ],
+    "side": [
+      "characters/female_02/references/face-side.jpeg"
+    ],
     "back": [],
-    "close_up": [],
-    "full_body": [],
-    "other": []
+    "close_up": [
+      "characters/female_02/references/face-full.jpeg"
+    ],
+    "full_body": [
+      "characters/female_02/references/full-body2.jpg"
+    ],
+    "other": [
+      "characters/female_02/references/reference.jpeg"
+    ]
   },
   "styling_rules": {
-    "default_wardrobe": [],
-    "hair": null,
+    "default_wardrobe": [
+      "Mauve-taupe sports crop top with racerback straps",
+      "Brown high-waisted flared mini skirt with a scalloped hem",
+      "Grey/navy running sneakers"
+    ],
+    "hair": "Long, straight black hair, centre-parted with wispy face-framing bangs, worn down",
     "makeup": null,
-    "accessories": [],
+    "accessories": [
+      "Black cat-eye sunglasses resting on top of the head",
+      "Pearl stud earrings",
+      "Beaded bracelets on both wrists"
+    ],
     "forbidden": [
       "Logos or brand marks other than the advertised product",
       "Wardrobe that conflicts with the brief's brand guidelines"
@@ -53,5 +71,5 @@
     "expires_on": null,
     "notes": "Fill in before status can become 'active'. Record who owns this character's likeness and what uses are licensed."
   },
-  "notes": "PLACEHOLDER. Add reference images to characters/female_02/references/, list them above, have a human write physical_description from the images, complete commercial_use, then set status to 'active'."
+  "notes": "physical_description approved by the user on 2026-11-19 from the reference images. Do not use references/reference.jpeg as an ingredient in bag ads: it shows a different (cream) bag. full-body2.jpg shows an alternate outfit (taupe skirt, white socks, grey sneakers); do not mix outfits within one production. Still PLACEHOLDER until commercial_use is completed by the user."
 }
